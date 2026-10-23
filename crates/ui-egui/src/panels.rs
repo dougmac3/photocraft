@@ -643,7 +643,7 @@ pub fn title_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                 if lead > 0.0 {
                     ui.add_space(lead + 4.0);
                 }
-                if !system {
+                if !system && !crate::menus::fossa_hosted() {
                     let side = if t.pro { 18.0 } else { 20.0 };
                     let (mark, _) = ui.allocate_exact_size(vec2(side, side), Sense::hover());
                     crate::brand::paint_mark(ui, mark);
@@ -676,7 +676,7 @@ pub fn title_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                     // (Preferences), then search (Edit › Search), and narrows the switcher
                     // (Window › Workspace) before anything runs over.
                     let room = ui.available_width();
-                    let icons_shown: u8 = if room >= WORKSPACE_MIN + 2.0 * ICON_SLOT {
+                    let icons_shown: u8 = if room >= WORKSPACE_MIN + 2.0 * ICON_SLOT && !crate::menus::fossa_hosted() {
                         2
                     } else if room >= WORKSPACE_MIN + ICON_SLOT {
                         1

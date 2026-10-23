@@ -1129,14 +1129,20 @@ pub fn menu_items(app: &PhotocraftApp) -> Vec<MenuItem> {
         item.label = "Release Clipping Mask".into();
         item.enabled = is_enabled(app, &item.id);
     }
-    if FOSSA_HOSTED.load(std::sync::atomic::Ordering::Relaxed) {
+    if fossa_hosted() {
         fossa_file_menu(&mut items);
+        items.retain(|i| crate::links::url_for(&i.id).is_none());
     }
     items
 }
 
 /// Set by the web shell when PhotoCraft runs inside Fossa (see apps/photocraft-web/src/fossa_bridge.rs).
 pub static FOSSA_HOSTED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Inside Fossa: no brand mark, community links or extra title-bar icons.
+pub fn fossa_hosted() -> bool {
+    FOSSA_HOSTED.load(std::sync::atomic::Ordering::Relaxed)
+}
 
 /// Inside Fossa, files come from and go back to Fossa: File keeps only what makes sense there, and
 /// Quick Export as PNG (which the bridge already hands to Fossa) leads it as "Add to Fossa chat".

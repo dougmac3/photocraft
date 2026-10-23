@@ -331,6 +331,9 @@ fn table_height(ui: &egui::Ui, rows: usize) -> f32 {
 /// (the platform browser service) rather than `ui.hyperlink_to`'s `ctx.open_url`, which the
 /// desktop build can't rely on (egui_winit needs its "links" feature, which we don't enable).
 fn link(app: &mut PhotocraftApp, ui: &mut egui::Ui, c: &Contributor, names: NameMode) -> egui::Response {
+    if crate::menus::fossa_hosted() {
+        return ui.label(c.name(names)).on_hover_text(c.summary());
+    }
     let url = format!("https://github.com/{}", c.login);
     let r = ui.add(egui::Link::new(c.name(names))).on_hover_text(c.summary());
     if r.clicked() {
