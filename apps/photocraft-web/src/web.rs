@@ -83,6 +83,10 @@ pub fn start() {
                     PhotocraftApp::setup_context(&cc.egui_ctx, ThemeKind::Pro);
                     let inbox: Inbox = Arc::default();
                     let place_inbox: Inbox = Arc::default();
+                    if let Some(origin) = crate::fossa_bridge::host() {
+                        photocraft_ui_egui::menus::FOSSA_HOSTED.store(true, Ordering::Relaxed);
+                        crate::fossa_bridge::listen(origin, inbox.clone(), cc.egui_ctx.clone());
+                    }
                     let served: Served = Arc::default();
                     load_font_manifest(served.clone(), cc.egui_ctx.clone());
                     let (session, warnings) = crate::preset_bridge::session(presets.clone());
@@ -433,7 +437,10 @@ fn services(inbox: Inbox, place_inbox: Inbox, cursor_pos: photocraft_ui_egui::Cu
                 reply.send(Some(FileDialogAnswer::SaveTo(name)));
             }
         })),
-        write: Some(Box::new(|path: &str, bytes: &[u8]| download(path, bytes))),
+        write: Some(Box::new(|path: &str, bytes: &[u8]| match crate::fossa_bridge::host() {
+            Some(origin) => crate::fossa_bridge::send_saved(&origin, path, bytes),
+            None => download(path, bytes),
+        })),
         // A download may be cancelled and never reports back: it doesn't save the document.
         write_unconfirmed: true,
         encode_png: Some(Box::new(|w, h, rgba| {

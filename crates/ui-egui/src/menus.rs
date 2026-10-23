@@ -1129,7 +1129,30 @@ pub fn menu_items(app: &PhotocraftApp) -> Vec<MenuItem> {
         item.label = "Release Clipping Mask".into();
         item.enabled = is_enabled(app, &item.id);
     }
+    if FOSSA_HOSTED.load(std::sync::atomic::Ordering::Relaxed) {
+        fossa_file_menu(&mut items);
+    }
     items
+}
+
+/// Set by the web shell when PhotoCraft runs inside Fossa (see apps/photocraft-web/src/fossa_bridge.rs).
+pub static FOSSA_HOSTED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Inside Fossa, files come from and go back to Fossa: File keeps only what makes sense there, and
+/// Quick Export as PNG (which the bridge already hands to Fossa) leads it as "Add to Fossa chat".
+fn fossa_file_menu(items: &mut Vec<MenuItem>) {
+    const KEEP: &[&str] = &["file.new", "file.placeEmbedded", "file.export.exportAs", "file.close", "file.closeAll"];
+    let file = |i: &MenuItem| i.path.first().map(String::as_str) == Some("File");
+    items.retain(|i| !file(i) || KEEP.contains(&i.id.as_str()) || i.id == "file.export.quickExportAsPng");
+    let Some(first) = items.iter().position(|i| file(i)) else { return };
+    for it in items.iter_mut().filter(|i| file(i)) {
+        it.path = vec!["File".into()];      // no submenus left to open
+    }
+    if let Some(at) = items.iter().position(|i| i.id == "file.export.quickExportAsPng") {
+        let mut add = items.remove(at);
+        add.label = "Add to Fossa chat".into();
+        items.insert(first, add);
+    }
 }
 
 /// Background tint of an Edit › Menus colour name.

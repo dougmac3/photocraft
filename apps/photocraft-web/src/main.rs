@@ -26,6 +26,9 @@ mod indexed_presets;
 mod web;
 
 #[cfg(target_arch = "wasm32")]
+mod fossa_bridge;
+
+#[cfg(target_arch = "wasm32")]
 fn main() {
     web::start();
 }
