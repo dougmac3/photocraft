@@ -258,7 +258,7 @@ pub(crate) fn pattern_picker(app: &PhotocraftApp, ui: &mut egui::Ui, selected: &
     ui.painter().rect_stroke(r, 0.0, Stroke::new(1.0, t.field_border), egui::StrokeKind::Outside);
     let name = current.map_or(String::new(), |p| p.display_name().to_string());
     let resp = resp.on_hover_text(&name);
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Patterns")));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("Patterns")));
     let mut picked = None;
     egui::Popup::menu(&resp).show(|ui| {
         ui.set_max_width(6.0 * (SWATCH + 4.0));
@@ -270,7 +270,7 @@ pub(crate) fn pattern_picker(app: &PhotocraftApp, ui: &mut egui::Ui, selected: &
                 let (w, c) = if p.id == selected { (2.0, t.accent) } else { (1.0, t.field_border) };
                 ui.painter().rect_stroke(r, 0.0, Stroke::new(w, c), egui::StrokeKind::Outside);
                 let cell = cell.on_hover_text(p.display_name());
-                cell.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, p.display_name()));
+                cell.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, p.display_name()));
                 if cell.clicked() {
                     picked = Some(p.id.clone());
                     ui.close();
@@ -461,7 +461,7 @@ pub(crate) fn browser(
                     let (cx, cy) = ((ii % cols) as f32, (ii / cols) as f32);
                     let r = Rect::from_min_size(area.min + vec2(pad + cx * (cell.x + gap), cy * (cell.y + gap)), cell);
                     let resp = ui.interact(r, ui.id().with((panel, gi, ii)), Sense::click_and_drag());
-                    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &it.name));
+                    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &it.name));
                     let is_sel = selected.as_deref() == Some(&it.key);
                     if list {
                         if is_sel {

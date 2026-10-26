@@ -33,7 +33,7 @@ fn header_stays_fixed_and_resize_hover_scroll_before_do_not_rebuild_the_proxy() 
         let label = photocraft_ui_egui::i18n::tr(photocraft_ui_egui::i18n::current(), "Tone Histogram");
         let header = h.query_by_label(label).expect("histogram graph").rect();
         h.event(Event::PointerMoved(pos2(1050.0, 400.0)));
-        h.event(Event::MouseWheel { unit: MouseWheelUnit::Point, phase: egui::TouchPhase::Move, delta: vec2(0.0, -320.0), modifiers: Modifiers::NONE });
+        h.event(Event::MouseWheel { unit: MouseWheelUnit::Point, phase: egui::TouchPhase::Move, delta: vec2(0.0, -320.0), modifiers: Modifiers::NONE, source: egui::MouseWheelSource::Unknown });
         h.run_steps(3);
         assert_eq!(h.query_by_label(label).expect("histogram graph").rect(), header, "{theme:?}: histogram scrolled");
         h.set_size(vec2(960.0, 600.0));

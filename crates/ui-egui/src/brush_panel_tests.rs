@@ -759,6 +759,7 @@ fn transfer_mixer_edits_use_the_brush_command_and_survive_real_tool_swaps() {
         delta: vec2(0.0, -250.0),
         phase: egui::TouchPhase::Move,
         modifiers: egui::Modifiers::NONE,
+        source: egui::MouseWheelSource::Unknown,
     });
     h.run_steps(20);
     let journal = h.state().session.journal.len();

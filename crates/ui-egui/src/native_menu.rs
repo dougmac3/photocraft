@@ -693,7 +693,7 @@ pub fn run(app: &mut PhotocraftApp, ctx: &egui::Context) {
     let clicks = std::mem::take(&mut menu.clicks);
     for id in clicks {
         if id == MINIMIZE {
-            ctx.send_viewport_cmd(egui::ViewportCommand::Minimized(true));
+            crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Minimized(true));
             continue;
         }
         // The rows are disabled while a dialog is open; a click that raced the update is dropped.

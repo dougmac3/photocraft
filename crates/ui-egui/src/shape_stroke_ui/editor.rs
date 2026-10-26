@@ -44,9 +44,9 @@ fn style_button(ui: &mut egui::Ui, options: &StrokeOptions, label: &str, selecte
     let (rect, response) = ui.allocate_exact_size(vec2(width.max(galley.size().x + 92.0), height), Sense::click());
     response.widget_info(|| {
         if opener {
-            egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), tl!("Stroke Options"))
+            egui::WidgetInfo::labeled(egui::Role::Button, ui.is_enabled(), tl!("Stroke Options"))
         } else {
-            egui::WidgetInfo::selected(egui::WidgetType::RadioButton, ui.is_enabled(), selected, tl!(label))
+            egui::WidgetInfo::selected(egui::Role::RadioButton, ui.is_enabled(), selected, tl!(label))
         }
     });
     let active = selected || response.has_focus();
@@ -278,7 +278,7 @@ fn choice<T: Copy + PartialEq>(ui: &mut egui::Ui, label: &str, value: &mut T, ch
             }
         });
     press.after(&response.response);
-    response.response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::ComboBox, ui.is_enabled(), tl!(label)));
+    response.response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::ComboBox, ui.is_enabled(), tl!(label)));
     let id = egui::Popup::default_response_id(&response.response);
     children.ids.push(id);
     if response.inner.is_some() {

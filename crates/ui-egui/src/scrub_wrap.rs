@@ -58,7 +58,7 @@ pub(crate) fn update(ui: &Ui, resp: &Response, value: &mut f32, before: f32, ran
     if scrub.pending.is_none()
         && let Some(to) = wrap_target(pos, viewport)
     {
-        ui.ctx().send_viewport_cmd(egui::ViewportCommand::CursorPosition(to));
+        crate::menus::viewport_cmd(ui.ctx(), egui::ViewportCommand::CursorPosition(to));
         scrub.pending = Some((pos, to));
         ui.ctx().request_repaint();
     }

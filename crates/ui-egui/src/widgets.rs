@@ -243,7 +243,7 @@ pub fn panel_menu_button(ui: &mut Ui) -> Response {
         crate::icons::paint(ui, rect, "ellipsis", 14.0, tint);
     }
     let tip = tl!("Panel menu");
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tip));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tip));
     resp.on_hover_text(tip)
 }
 
@@ -264,7 +264,7 @@ pub fn pill_tab(ui: &mut Ui, label: &str, selected: bool) -> Response {
     }
     let color = if selected { t.text } else { t.text_dim };
     ui.painter().galley_with_override_text_color(rect.center() - galley.size() / 2.0, galley, color);
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, translated));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, translated));
     resp
 }
 
@@ -287,7 +287,7 @@ pub fn elided_label_sensed(ui: &mut Ui, text: &str, max_w: f32, sense: Sense) ->
     let elided = galley.elided;
     let (rect, resp) = ui.allocate_exact_size(galley.size(), sense);
     ui.painter().galley(rect.min, galley, t.text_dim);
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Label, ui.is_enabled(), text));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Label, ui.is_enabled(), text));
     if elided { resp.on_hover_text(text) } else { resp }
 }
 
@@ -744,7 +744,7 @@ pub fn popup_value_field(ui: &mut Ui, name: &str, value: &mut f32, range: std::o
     let arrow = Rect::from_min_max(pos2(rect.right() - POPUP_ARROW_W - 2.0, rect.top() + 2.0), rect.max - vec2(2.0, 2.0));
     let resp = ui.interact(arrow, field.id.with("popup-slider"), Sense::click_and_drag());
     let name = name.trim_end_matches([':', '：']).to_string();
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), &name));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, ui.is_enabled(), &name));
     let resp = resp.on_hover_text(&name);
     let drag_key = resp.id.with("drag");
     // Every drag gets a new number when it starts, even if its first frame changes nothing.
@@ -1438,7 +1438,7 @@ fn button_impl_h(ui: &mut Ui, label: &str, min_width: f32, height: Option<f32>, 
     let h = size.y;
     let (rect, resp) = ui.allocate_exact_size(size, Sense::click());
     // Painted text: name the button for accessibility (and so tests and agents can find it).
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), label));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, ui.is_enabled(), label));
     if resp.has_focus() {
         // Keyboard focus (Tab); clicks don't focus egui buttons.
         let r = if t.pro { h / 2.0 } else { t.radius_sm } + 2.0;
@@ -1874,7 +1874,7 @@ pub fn checkbox(ui: &mut Ui, on: &mut bool, label: &str) -> Response {
     }
     // The label is the single named, focusable checkbox; the box is a mouse target.
     // Override Label's metadata instead of creating a second node with the same name.
-    label_resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::Checkbox, ui.is_enabled(), *on, tl!(label)));
+    label_resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::CheckBox, ui.is_enabled(), *on, tl!(label)));
     resp
 }
 
@@ -2769,6 +2769,7 @@ mod tests {
                 delta: egui::vec2(0.0, -1.0),
                 phase: egui::TouchPhase::Move,
                 modifiers: Modifiers::NONE,
+                source: egui::MouseWheelSource::Unknown,
             });
             h.run();
             assert_eq!(list(&h).map(|r| r.width()), Some(open.width()));
@@ -2797,7 +2798,7 @@ mod tests {
         h.event(egui::Event::ModifiersChanged(modifiers));
         h.hover_at(at);
         h.run();
-        h.event(egui::Event::MouseWheel { unit, delta, phase: egui::TouchPhase::Move, modifiers });
+        h.event(egui::Event::MouseWheel { unit, delta, phase: egui::TouchPhase::Move, modifiers, source: egui::MouseWheelSource::Unknown });
         h.run();
         h.event(egui::Event::ModifiersChanged(Modifiers::NONE));
         h.run();
@@ -2861,7 +2862,7 @@ pub fn color_edit_button_srgba(ui: &mut Ui, color: &mut Color32) -> Response {
 pub(crate) fn color_swatch(ui: &mut Ui, color: Color32) -> Response {
     let t = Tokens::get(ui.ctx());
     let (rect, response) = ui.allocate_exact_size(ui.spacing().interact_size, Sense::click());
-    response.widget_info(|| egui::WidgetInfo::new(egui::WidgetType::ColorButton));
+    response.widget_info(|| egui::WidgetInfo::new(egui::Role::ColorWell));
     checker_rounded(ui.painter(), rect, 4.0, t.radius_sm);
     ui.painter().rect_filled(rect.shrink(1.0), t.radius_sm, color);
     ui.painter().rect_stroke(rect, t.radius_sm, Stroke::new(1.0, t.field_border), StrokeKind::Inside);
@@ -2872,7 +2873,7 @@ pub(crate) fn color_swatch(ui: &mut Ui, color: Color32) -> Response {
 pub fn color_swatch_button(ui: &mut Ui, color: Color32, label: &str) -> Response {
     let t = Tokens::get(ui.ctx());
     let (rect, response) = ui.allocate_exact_size(ui.spacing().interact_size, Sense::click());
-    response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::ColorButton, true, label));
+    response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::ColorWell, true, label));
     checker_rounded(ui.painter(), rect, 4.0, t.radius_sm);
     ui.painter().rect_filled(rect.shrink(1.0), t.radius_sm, color);
     ui.painter().rect_stroke(rect, t.radius_sm, Stroke::new(1.0, t.field_border), StrokeKind::Inside);

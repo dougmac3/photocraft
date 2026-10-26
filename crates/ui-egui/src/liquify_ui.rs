@@ -1794,6 +1794,7 @@ mod tests {
             delta: vec2(0.0, 1.0),
             modifiers: egui::Modifiers::NONE,
             phase: egui::TouchPhase::Move,
+            source: egui::MouseWheelSource::Unknown,
         };
         let z1 = app.distort.liquify.as_ref().unwrap().zoom;
         frame(&mut app, &ctx, vec![egui::Event::PointerMoved(at), wheel]);

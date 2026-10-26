@@ -141,7 +141,7 @@ pub fn filter_rows(app: &mut PhotocraftApp, ui: &mut egui::Ui, doc: &Document, l
         if shown {
             icons::paint(ui, eye, "eye", 12.0, if on { t.icon } else { t.text_faint });
         }
-        eye_resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::Checkbox, true, shown, format!("{} {name}", tl!("Visibility"))));
+        eye_resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::CheckBox, true, shown, format!("{} {name}", tl!("Visibility"))));
         if eye_resp.clicked() {
             actions.push(match index {
                 None => ("layer.smartFilter.disableSmartFilters".into(), json!({"layer": l.id.0})),
@@ -189,8 +189,8 @@ pub fn filter_rows(app: &mut PhotocraftApp, ui: &mut egui::Ui, doc: &Document, l
             ui.interact(name_rect, ui.id().with(("sf-name", l.id.0, i)), Sense::click_and_drag())
         });
         match &name_resp {
-            Some(r) => r.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, selected, &name)),
-            None => resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, selected, &name)),
+            Some(r) => r.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected, &name)),
+            None => resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected, &name)),
         }
         let hit = |f: fn(&egui::Response) -> bool| f(&resp) || name_resp.as_ref().is_some_and(f);
         if hit(egui::Response::drag_started) {
@@ -211,7 +211,7 @@ pub fn filter_rows(app: &mut PhotocraftApp, ui: &mut egui::Ui, doc: &Document, l
             let blend_resp = ui.interact(r, ui.id().with(("sf-blend", l.id.0, i)), Sense::click());
             icons::paint(ui, r, "sliders-horizontal", 13.0, if blend_resp.hovered() { t.text } else { t.icon });
             let label = crate::i18n::fmt(tl!("Blending Options ({filter})"), &[("filter", &name)]);
-            blend_resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &label));
+            blend_resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &label));
             if blend_resp.double_clicked()
                 && let Err(e) = crate::smart_filter_dialog::open(app, l.id, i)
             {

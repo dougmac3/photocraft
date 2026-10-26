@@ -1589,7 +1589,7 @@ fn picker_rgba(hsva: egui::ecolor::Hsva) -> [f32; 4] {
 fn swatch(ui: &mut egui::Ui, fill: Option<&photocraft_doc::Fill>, fallback: [f32; 4], tip: &str) -> Option<PaintChange> {
     let t = Tokens::get(ui.ctx());
     let (r, resp) = ui.allocate_exact_size(vec2(30.0, 22.0), Sense::click());
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::ColorButton, ui.is_enabled(), tip));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::ColorWell, ui.is_enabled(), tip));
     let current = fill.and_then(color_of);
     crate::widgets::checker(ui.painter(), r.shrink(1.0), 4.0);
     match (current, fill) {
@@ -2092,7 +2092,7 @@ pub fn paths_panel(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                     ui.ctx().data_mut(|d| d.insert_temp(path_drag_key(), PathDrag { name, cmd, params }));
                 }
                 // Rows are painted: name them for screen readers and UI tests.
-                resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::SelectableLabel, true, name));
+                resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, name));
                 let sel = app.ui.selected_path.as_deref() == Some(key.as_str());
                 if sel {
                     ui.painter().rect_filled(r, 0.0, t.row_selected);

@@ -42,6 +42,7 @@ fn deflate_egui_fonts() {
         ("NotoEmoji-Regular", epaint_default_fonts::NOTO_EMOJI_REGULAR),
         ("Ubuntu-Light", epaint_default_fonts::UBUNTU_LIGHT),
         ("emoji-icon-font", epaint_default_fonts::EMOJI_ICON),
+        ("egui-icons", epaint_default_fonts::EGUI_ICONS),
     ];
     let result = (|| -> std::io::Result<()> {
         std::fs::create_dir_all(&out)?;

@@ -1559,7 +1559,7 @@ fn theme_swatch(ui: &mut egui::Ui, kind: ThemeKind, id: &str, selected: &mut Str
         egui::Stroke::new(1.0, t.card_border)
     };
     painter.rect_stroke(rect.shrink(1.0), 3.0, stroke, egui::StrokeKind::Inside);
-    resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::RadioButton, true, on, &label));
+    resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::RadioButton, true, on, &label));
     if resp.on_hover_text(&label).clicked() {
         *selected = id.to_string();
     }
@@ -1578,7 +1578,7 @@ fn theme_swatch(ui: &mut egui::Ui, kind: ThemeKind, id: &str, selected: &mut Str
     // pointer arrives, and oscillating when that moves the swatch out from under it.
     let response = ui.interact(badge, ui.id().with((id, "favorite")), Sense::click()).on_hover_text(action);
     crate::icons::paint(ui, badge, icon, 10.0, tint);
-    response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, format!("{action}: {label}")));
+    response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, format!("{action}: {label}")));
     if response.clicked() {
         if favorite {
             favorites.retain(|saved| *saved != theme);

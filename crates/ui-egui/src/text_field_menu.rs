@@ -264,7 +264,7 @@ fn apply(ctx: &Context, field: Id, action: Action) {
         Action::SelectAll => key(Key::A, Modifiers::COMMAND),
         Action::Paste => {
             // The clipboard text arrives as a Paste event next pass, as for ⌘V in a field.
-            ctx.send_viewport_cmd(egui::ViewportCommand::RequestPaste);
+            crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::RequestPaste);
             return;
         }
     };

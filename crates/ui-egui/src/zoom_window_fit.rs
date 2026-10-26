@@ -151,7 +151,9 @@ pub fn follow(
     };
     let on = app.session.prefs().general.zoom_resizes_windows && !pinned;
     let size = resize_for(ctx, window.id, on, &window.view, after, &layout)?;
-    ctx.send_viewport_cmd_to(viewport, ViewportCommand::InnerSize(size));
+    if !crate::menus::fossa_hosted() {
+        ctx.send_viewport_cmd_to(viewport, ViewportCommand::InnerSize(size));
+    }
     if let Some(center) = wrapped_center(after, &layout) {
         after.center = center;
         // The canvas drew before this: show the centred view on the next frame.

@@ -351,11 +351,11 @@ fn baseline_offset(face: (f32, f32, f32), primary: (f32, f32, f32)) -> f32 {
 /// Registers `name` at the lowest priority in every font family.
 fn add_to_all_families(ctx: &egui::Context, name: String, mut data: FontData) {
     // Align to Inter, the primary of every UI family; JetBrains Mono differs by under 0.005em.
-    let primary = ctx.fonts(|f| f.definitions().font_data.get("Inter").and_then(|p| vertical_metrics(&p.font, p.index)));
-    if let (Some(face), Some(primary)) = (vertical_metrics(&data.font, data.index), primary) {
+    let primary = ctx.fonts(|f| f.definitions().font_data.get("Inter").and_then(|p| vertical_metrics((*p.font).as_ref(), p.index)));
+    if let (Some(face), Some(primary)) = (vertical_metrics((*data.font).as_ref(), data.index), primary) {
         data.tweak.y_offset_factor = baseline_offset(face, primary);
     }
-    if let Some(weight) = regular_weight(&data.font, data.index) {
+    if let Some(weight) = regular_weight((*data.font).as_ref(), data.index) {
         data.tweak.coords = egui::epaint::text::VariationCoords::new([(b"wght", weight)]);
     }
     let mut families: Vec<FontFamily> = ctx.fonts(|f| f.definitions().families.keys().cloned().collect());
@@ -876,7 +876,7 @@ mod tests {
             assert!(render(&ctx, "レイヤー 1"), "tofu in kana");
             let fonts = ctx.fonts(|f| f.definitions().clone());
             let name = format!("{FONT_PREFIX}-0");
-            assert!(fonts.font_data.get(&name).is_some_and(|d| std::ptr::eq(d.font.as_ref().as_ptr(), ui_font.bytes.as_ptr())), "BIZ UDPGothic Regular first");
+            assert!(fonts.font_data.get(&name).is_some_and(|d| std::ptr::eq((*d.font).as_ref().as_ptr(), ui_font.bytes.as_ptr())), "BIZ UDPGothic Regular first");
             for (fam, stack) in &fonts.families {
                 assert_eq!(stack.last(), Some(&name), "{fam:?}: appended last so Latin keeps Inter");
                 assert!(stack.first().is_some_and(|f| f != &name), "{fam:?}");

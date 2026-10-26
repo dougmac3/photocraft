@@ -70,7 +70,7 @@ pub fn header(ui: &mut egui::Ui, layer: &Layer) {
         ui.painter().galley(pos2(r.right() - kind_w - 2.0, r.center().y - kind_g.size().y / 2.0), kind_g, t.text_faint);
     }
     let name = layer.name.clone();
-    resp.widget_info(move || egui::WidgetInfo::labeled(egui::WidgetType::Label, true, format!("{name} — {kind}")));
+    resp.widget_info(move || egui::WidgetInfo::labeled(egui::Role::Label, true, format!("{name} — {kind}")));
 }
 
 /// A collapsible section: a separator, then a chevron + title row. Returns whether it's open.
@@ -98,7 +98,7 @@ pub fn section(ui: &mut egui::Ui, id: &str, title: &str) -> bool {
         ui.data_mut(|d| d.insert_temp(key, open));
     }
     let label = title.to_string();
-    resp.widget_info(move || egui::WidgetInfo::selected(egui::WidgetType::CollapsingHeader, true, open, &label));
+    resp.widget_info(move || egui::WidgetInfo::selected(egui::Role::DisclosureTriangle, true, open, &label));
     record(ui.ctx(), title, r);
     if open {
         ui.add_space(theme::ROW_GAP / 2.0);
@@ -176,7 +176,7 @@ pub fn quick_actions_ui(app: &PhotocraftApp, ui: &mut egui::Ui, content: &LayerC
             ui.spacing_mut().item_spacing.x = COL_GAP;
             for (label, id) in row {
                 let resp = widgets::secondary_button(ui, label, w);
-                resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, *label));
+                resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, *label));
                 if resp.clicked() {
                     out = Some(*id);
                 }

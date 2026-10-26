@@ -261,7 +261,7 @@ pub(crate) fn invoke_unguarded(app: &mut PhotocraftApp, ctx: &egui::Context, id:
             }
         }
         "file.exit" => {
-            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+            crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Close);
             Ok(Value::Null)
         }
         "file.clearRecent" => {
@@ -1144,6 +1144,14 @@ pub fn fossa_hosted() -> bool {
     FOSSA_HOSTED.load(std::sync::atomic::Ordering::Relaxed)
 }
 
+/// A command for the window, unless PhotoCraft runs inside Fossa: the window is Fossa's then, and
+/// only a paste request or a screenshot of it (which change nothing) go through.
+pub fn viewport_cmd(ctx: &egui::Context, cmd: egui::ViewportCommand) {
+    if !fossa_hosted() || matches!(cmd, egui::ViewportCommand::RequestPaste | egui::ViewportCommand::Screenshot(_)) {
+        ctx.send_viewport_cmd(cmd);
+    }
+}
+
 /// Inside Fossa, files come from and go back to Fossa: File keeps only what makes sense there, and
 /// Quick Export as PNG (which the bridge already hands to Fossa) leads it as "Add to Fossa chat".
 fn fossa_file_menu(items: &mut Vec<MenuItem>) {
@@ -1605,7 +1613,7 @@ fn submenu_row<R>(ui: &mut egui::Ui, title: egui::WidgetText, content: impl FnOn
     if open {
         ui.style_mut().visuals.widgets.inactive = ui.style().visuals.widgets.open;
     }
-    let response = ui.add(egui::Button::new(title).right_text(SubMenuButton::RIGHT_ARROW));
+    let response = ui.add(egui::Button::new(title).right_text(SubMenuButton::arrow_atom(None)));
     ui.style_mut().visuals.widgets.inactive = inactive;
     // The rect egui tests the pointer against (`SubMenu::show`), against the part that can be seen.
     let reach = response.rect.expand2(ui.spacing().item_spacing / 2.0);
@@ -2131,6 +2139,7 @@ mod tests {
             delta: egui::vec2(0.0, -80.0),
             phase: egui::TouchPhase::Move,
             modifiers: egui::Modifiers::NONE,
+            source: egui::MouseWheelSource::Unknown,
         });
         harness.run_steps(4);
 

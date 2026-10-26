@@ -47,6 +47,7 @@ fn scrolling_the_paths_list_does_not_move_the_footer() {
                 delta: vec2(0.0, dir),
                 phase: egui::TouchPhase::Move,
                 modifiers: Default::default(),
+                source: egui::MouseWheelSource::Unknown,
             });
             h.run_steps(1);
             assert_eq!(footer(&h), Some(rest), "{ppp}x, {height} high, notch {i}: the footer stayed put");

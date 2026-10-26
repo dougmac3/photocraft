@@ -87,6 +87,7 @@ fn the_table_header_stays_put_while_the_rows_scroll() {
             delta: vec2(0.0, -200.0),
             modifiers: egui::Modifiers::NONE,
             phase: egui::TouchPhase::Move,
+            source: egui::MouseWheelSource::Unknown,
         });
         h.run_steps(2);
     }

@@ -186,6 +186,7 @@ fn color_lookup_picker_cycles_luts_with_the_mouse_wheel() {
             delta: vec2(0.0, -1.0),
             phase: egui::TouchPhase::Move,
             modifiers: Default::default(),
+            source: egui::MouseWheelSource::Unknown,
         });
         h.run_steps(1);
     }
@@ -306,7 +307,7 @@ fn wheel_at(h: &mut Harness<'_, PhotocraftApp>, at: Pos2, notches: f32, mods: eg
     h.event(egui::Event::ModifiersChanged(mods));
     h.hover_at(at);
     h.run_steps(1);
-    h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, notches), phase: egui::TouchPhase::Move, modifiers: mods });
+    h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, notches), phase: egui::TouchPhase::Move, modifiers: mods, source: egui::MouseWheelSource::Unknown });
     h.run_steps(1);
     h.event(egui::Event::ModifiersChanged(egui::Modifiers::NONE));
     h.run_steps(3);

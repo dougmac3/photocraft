@@ -136,6 +136,7 @@ fn the_search_field_stays_put_while_the_list_scrolls() {
             delta: vec2(0.0, -3.0),
             phase: egui::TouchPhase::Move,
             modifiers: Modifiers::NONE,
+            source: egui::MouseWheelSource::Unknown,
         });
         h.run();
     }
@@ -831,7 +832,7 @@ fn wheel_over_the_closed_font_button_steps_through_the_families() {
     h.hover_at(button);
     h.run();
     let wheel = |h: &mut Harness<'static, State>, y: f32| {
-        h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, y), phase: egui::TouchPhase::Move, modifiers: Modifiers::NONE });
+        h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, y), phase: egui::TouchPhase::Move, modifiers: Modifiers::NONE, source: egui::MouseWheelSource::Unknown });
         h.run();
     };
     wheel(&mut h, -2.0);
@@ -850,7 +851,7 @@ fn wheel_over_the_closed_button_keeps_a_stable_order_with_recents() {
     h.hover_at(button);
     h.run();
     let wheel = |h: &mut Harness<'static, State>, y: f32| {
-        h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, y), phase: egui::TouchPhase::Move, modifiers: Modifiers::NONE });
+        h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, y), phase: egui::TouchPhase::Move, modifiers: Modifiers::NONE, source: egui::MouseWheelSource::Unknown });
         h.run();
     };
     wheel(&mut h, -1.0);

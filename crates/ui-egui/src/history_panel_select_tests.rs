@@ -158,6 +158,7 @@ fn scrolling_away_survives_a_change_that_adds_no_state() {
             delta: vec2(0.0, 3.0),
             phase: egui::TouchPhase::Move,
             modifiers: Default::default(),
+            source: egui::MouseWheelSource::Unknown,
         });
         h.run_steps(1);
     }
@@ -188,6 +189,7 @@ fn clicking_a_snapshot_keeps_it_in_view() {
             delta: vec2(0.0, 5.0),
             phase: egui::TouchPhase::Move,
             modifiers: Default::default(),
+            source: egui::MouseWheelSource::Unknown,
         });
         h.run_steps(1);
     }
@@ -214,6 +216,7 @@ fn a_new_state_at_the_history_limit_still_scrolls_into_view() {
             delta: vec2(0.0, 3.0),
             phase: egui::TouchPhase::Move,
             modifiers: Default::default(),
+            source: egui::MouseWheelSource::Unknown,
         });
         h.run_steps(1);
     }

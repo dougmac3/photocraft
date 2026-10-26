@@ -96,6 +96,9 @@ pub mod eyedropper_ui;
 pub mod field_tab;
 pub mod field_wheel;
 pub mod file_dialog;
+// PhotoCraft as a desk inside Fossa Direct's native window.
+#[cfg(not(target_arch = "wasm32"))]
+pub mod fossa_native;
 pub mod file_open;
 pub mod file_ui;
 pub mod fill_ui;
@@ -776,6 +779,8 @@ pub struct PhotocraftApp {
     pending_screenshots: Vec<(u64, Option<String>, Sender<ControlResponse>)>,
     /// Screenshots not yet requested from the viewport: (token, earliest time in ms, frames seen).
     queued_screenshots: Vec<(u64, f64, u32)>,
+    /// Screenshots the window has delivered (egui 0.37 answers through a callback): (token, image).
+    screenshot_inbox: std::sync::Arc<std::sync::Mutex<Vec<(u64, std::sync::Arc<egui::ColorImage>)>>>,
     /// Control replies waiting for queued synthetic input to be processed.
     input_waiters: Vec<Sender<ControlResponse>>,
     /// Live (uncommitted) adjustment edit shown on canvas while a slider is dragged.
@@ -1053,6 +1058,7 @@ impl PhotocraftApp {
             control_rx: None,
             pending_screenshots: Vec::new(),
             queued_screenshots: Vec::new(),
+            screenshot_inbox: Default::default(),
             input_waiters: Vec::new(),
             live_adjust: None,
             frame: 0,
@@ -2185,7 +2191,12 @@ impl PhotocraftApp {
         self.queued_screenshots.retain_mut(|(token, at, frames)| {
             *frames += 1;
             if now >= *at && *frames >= 3 {
-                ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(egui::UserData::new(*token)));
+                let (inbox, wake, token) = (self.screenshot_inbox.clone(), ctx.clone(), *token);
+                let done = egui::ScreenshotCallback::new(move |image| {
+                    inbox.lock().unwrap_or_else(|e| e.into_inner()).push((token, image));
+                    wake.request_repaint();
+                });
+                crate::menus::viewport_cmd(ctx, egui::ViewportCommand::Screenshot(done));
                 false
             } else {
                 true
@@ -2197,19 +2208,8 @@ impl PhotocraftApp {
         if self.pending_screenshots.is_empty() {
             return;
         }
-        let events: Vec<_> = ctx.input(|i| {
-            i.raw
-                .events
-                .iter()
-                .filter_map(|e| match e {
-                    egui::Event::Screenshot { user_data, image, .. } => {
-                        let token = user_data.data.as_ref().and_then(|d| d.downcast_ref::<u64>()).copied()?;
-                        Some((token, image.clone()))
-                    }
-                    _ => None,
-                })
-                .collect()
-        });
+        let _ = ctx;
+        let events: Vec<_> = std::mem::take(&mut *self.screenshot_inbox.lock().unwrap_or_else(|e| e.into_inner()));
         for (token, image) in events {
             if let Some(i) = self.pending_screenshots.iter().position(|(t, _, _)| *t == token) {
                 let (_, path, reply) = self.pending_screenshots.remove(i);
@@ -2324,7 +2324,7 @@ impl eframe::App for PhotocraftApp {
             self.open_dropped(ctx, dropped, at);
             // Files dragged in from another app's window: PhotoCraft comes to the front and takes
             // the keyboard, as Photoshop does, instead of staying behind the source (#5687).
-            ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
+            crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Focus);
         }
         self.place_next_dropped(ctx);
         // The control transport wakes the UI on arrival (ctx.request_repaint); only poll while a

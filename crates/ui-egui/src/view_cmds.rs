@@ -726,7 +726,7 @@ fn run(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, p: &Value) -> Res
         let (commands, was_maximized) = screen_mode_commands(cfg!(target_os = "windows"), full_screen, maximized, was_maximized, next);
         ctx.data_mut(|d| d.insert_temp(was_maximized_id(), was_maximized));
         for command in commands {
-            ctx.send_viewport_cmd(command);
+            crate::menus::viewport_cmd(&ctx, command);
         }
         return Ok(json!({"screenMode": next}));
     }

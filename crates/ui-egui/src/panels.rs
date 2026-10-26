@@ -107,7 +107,7 @@ pub fn toolbar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             let (cr, resp) = ui.allocate_exact_size(vec2(bx, 14.0), Sense::click());
             let (shrink, grow) = if crate::direction::is_rtl() { ("chevrons-right", "chevrons-left") } else { ("chevrons-left", "chevrons-right") };
             icons::paint(ui, cr, if double { shrink } else { grow }, 11.0, if resp.hovered() { t.text } else { t.text_faint });
-            resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Toolbar")));
+            resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("Toolbar")));
             if resp.clicked() {
                 app.ui.panels.toolbar_double = !double;
             }
@@ -563,9 +563,9 @@ fn color_chips(app: &mut PhotocraftApp, ui: &mut egui::Ui, two_columns: bool, co
         p.rect_stroke(b, 1.0, Stroke::new(1.0, ink(d)), StrokeKind::Inside);
     }
     if let Some(d) = &d {
-        d.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Default colours (D)")));
+        d.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("Default colours (D)")));
     }
-    s.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Swap colours (X)")));
+    s.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("Swap colours (X)")));
     if s.on_hover_text(tl!("Swap colours (X)")).clicked() {
         chip_command(app, "tools.swapColors");
     }
@@ -621,7 +621,7 @@ pub fn title_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             }
             if drag.double_clicked() {
                 let max = ui.ctx().input(|i| i.viewport().maximized.unwrap_or(false));
-                ui.ctx().send_viewport_cmd(egui::ViewportCommand::Maximized(!max));
+                crate::menus::viewport_cmd(ui.ctx(), egui::ViewportCommand::Maximized(!max));
             }
             // Preferences › Interface › Show File Name In Title: with it off the bar keeps the
             // app name and the unsaved dot, since the tabs already name the file (#5037).
@@ -763,7 +763,7 @@ pub fn sync_window_title(app: &mut PhotocraftApp, ctx: &egui::Context) {
     let want = window_title(app);
     if app.last_window_title != want {
         app.last_window_title = want.clone();
-        ctx.send_viewport_cmd(egui::ViewportCommand::Title(want));
+        crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Title(want));
     }
 }
 
@@ -2327,7 +2327,7 @@ mod navigator_wheel_tests {
     fn frame(app: &mut PhotocraftApp, ctx: &egui::Context, pointer: Pos2, wheel: f32) {
         let mut events = vec![Event::PointerMoved(pointer)];
         if wheel != 0.0 {
-            events.push(Event::MouseWheel { unit: MouseWheelUnit::Line, delta: vec2(0.0, wheel), phase: TouchPhase::Move, modifiers: Modifiers::NONE });
+            events.push(Event::MouseWheel { unit: MouseWheelUnit::Line, delta: vec2(0.0, wheel), phase: TouchPhase::Move, modifiers: Modifiers::NONE, source: egui::MouseWheelSource::Unknown });
         }
         let mut out = ctx
             .run_ui(RawInput { screen_rect: Some(Rect::from_min_size(Pos2::ZERO, vec2(430.0, 460.0))), events, ..Default::default() }, |ui| navigator(app, ui));
@@ -2946,7 +2946,7 @@ fn layers(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         }
         // A click follows the selected thumbnail; name that action for screen readers even
         // though dropping a whole layer row onto the same button always deletes the layer.
-        trash.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!(label)));
+        trash.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!(label)));
         let new_layer = icons::button(ui, "square-plus", 26.0, false, &crate::shortcuts::tip_label(app, "Create a new layer", "layer.new.layer"));
         if new_layer.clicked() {
             // A click makes the layer above the selection; ⌥-click asks first (the New Layer
@@ -2997,7 +2997,7 @@ fn layers(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             crate::i18n::fmt(tl!("Add a mask  (from the selection; {key} inverts)"), &[("key", &crate::shortcuts::pretty("Alt"))])
         };
         let mask_btn = ui.add_enabled_ui(mask_cmd.is_some(), |ui| icons::button(ui, "layer-mask", 26.0, false, &mask_tip)).inner;
-        mask_btn.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &mask_tip));
+        mask_btn.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, &mask_tip));
         if mask_btn.clicked()
             && let Some(cmd) = mask_cmd
         {
@@ -3073,7 +3073,7 @@ fn layers(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
 /// returns the command on release.
 fn footer_drop(ui: &egui::Ui, button: &egui::Response, drag: Option<(u64, bool)>, command: &str) -> Option<(String, Value)> {
     // Named for screen readers (and tests) after the command a drop runs.
-    button.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, footer_label(command)));
+    button.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, footer_label(command)));
     let (layer, in_selection) = drag?;
     dropped_on(ui, button).then(|| (command.into(), if in_selection { json!({}) } else { json!({"layer": layer}) }))
 }
@@ -3121,7 +3121,7 @@ fn footer_menu_arrow(ui: &egui::Ui, rect: Rect) {
 fn footer_menu_button(ui: &mut egui::Ui, icon: &str, size: f32, tip: &str) -> egui::Response {
     let response = icons::button(ui, icon, size, false, tip);
     // Named for screen readers (and tests) after its tooltip.
-    response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tip));
+    response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tip));
     footer_menu_arrow(ui, response.rect);
     response
 }
@@ -3138,7 +3138,7 @@ fn fx_button(ui: &mut egui::Ui, size: f32, tip: &str) -> egui::Response {
     let g = ui.painter().layout_job(job);
     ui.painter().galley(r.center() - g.size() / 2.0, g, t.icon);
     footer_menu_arrow(ui, r);
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tip));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tip));
     resp.on_hover_text(tip)
 }
 
@@ -3262,7 +3262,7 @@ fn layer_row(
         crate::layer_transfer::begin_from_panel(app, ctx, l.id);
     }
     // Rows are painted: name them for screen readers and UI tests.
-    resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, selected, &l.name));
+    resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected, &l.name));
     // A row scrolled out of view only keeps its place (#125): a layout's hundreds of rows would
     // otherwise lay out names, icons and thumbnails every frame. Group rows stay whole: their
     // disclosure triangle is a widget (accessibility, scroll-to).
@@ -3662,7 +3662,7 @@ fn history(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             // Past states can be dragged onto the trash; the oldest one can't be deleted.
             let sense = if is_redo || i == 0 { Sense::click() } else { Sense::click_and_drag() };
             let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 24.0), sense);
-            resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, selected, &e));
+            resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected, &e));
             if resp.drag_started() {
                 ui.ctx().data_mut(|d| d.insert_temp(history_drag_key(), HistoryDrag::State(i)));
             }
@@ -3862,7 +3862,7 @@ fn snapshot_rows(app: &mut PhotocraftApp, ui: &mut egui::Ui, selected: Option<u6
     for snap in &snaps {
         let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 38.0), Sense::click_and_drag());
         let is_selected = selected == Some(snap.id);
-        resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, is_selected, &snap.name));
+        resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, is_selected, &snap.name));
         if resp.drag_started() {
             ctx.data_mut(|d| d.insert_temp(history_drag_key(), HistoryDrag::Snapshot(snap.id)));
         }
@@ -4507,7 +4507,7 @@ fn mixer_load_swatch(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     }
     p.rect_stroke(chip, 2.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
     icons::paint(ui, Rect::from_center_size(pos2(r.right() - 9.0, r.center().y), vec2(10.0, 10.0)), "chevron-down", 9.0, t.text_faint);
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Current Brush Load")));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("Current Brush Load")));
     let resp = resp.on_hover_text(tl!("Current Brush Load"));
     let mut run = None;
     egui::Popup::menu(&resp).show(|ui| {
@@ -4541,7 +4541,7 @@ fn brush_preset_chip(ui: &mut egui::Ui, b: &photocraft_engine::BrushSettings, st
     brush_tip(ui.painter(), c, 7.0, b.hardness, tip);
     ui.painter().text(pos2(c.x, r.bottom() - 5.0), Align2::CENTER_CENTER, format!("{}", b.size.round() as i64), egui::FontId::proportional(9.5), t.text_dim);
     icons::paint(ui, Rect::from_center_size(pos2(r.right() - 9.0, c.y), vec2(10.0, 10.0)), "chevron-down", 9.0, t.text_faint);
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Brush Preset picker")));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("Brush Preset picker")));
     if resp.on_hover_text(tl!("Brush Preset picker")).clicked() {
         if state.brush_picker.is_some() {
             crate::brush_picker::close(state);
@@ -4841,7 +4841,7 @@ fn effect_rows(app: &mut PhotocraftApp, ui: &mut egui::Ui, l: &Layer, depth: usi
             egui::FontId::proportional(11.5),
             if on { t.text_dim } else { t.text_faint },
         );
-        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, name.clone()));
+        resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, name.clone()));
         if resp.double_clicked() {
             crate::layer_style::open_for_layer(app, l.id, kind);
         }
@@ -6843,6 +6843,7 @@ mod compact_visual_regressions {
                     delta: vec2(0.0, -1500.0),
                     modifiers: egui::Modifiers::NONE,
                     phase: egui::TouchPhase::Move,
+                    source: egui::MouseWheelSource::Unknown,
                 });
                 harness.run_steps(30);
                 // Off the toolbar, so a tooltip of the tool scrolled under the pointer isn't a
@@ -6944,6 +6945,7 @@ mod compact_visual_regressions {
                                 delta: vec2(-1500.0, 0.0),
                                 modifiers: egui::Modifiers::NONE,
                                 phase: egui::TouchPhase::Move,
+                                source: egui::MouseWheelSource::Unknown,
                             },
                         ]);
                         harness.run_steps(1);
@@ -7143,6 +7145,7 @@ mod compact_visual_regressions {
                                         delta: vec2(-100.0, 0.0),
                                         modifiers: egui::Modifiers::NONE,
                                         phase: egui::TouchPhase::Move,
+                                        source: egui::MouseWheelSource::Unknown,
                                     },
                                 ],
                                 ..input_at_scale(screen, scale)
@@ -7287,6 +7290,7 @@ mod compact_visual_regressions {
                                         delta: vec2(-1500.0, 0.0),
                                         modifiers: egui::Modifiers::NONE,
                                         phase: egui::TouchPhase::Move,
+                                        source: egui::MouseWheelSource::Unknown,
                                     },
                                 ],
                                 ..input_at_scale(screen, scale)

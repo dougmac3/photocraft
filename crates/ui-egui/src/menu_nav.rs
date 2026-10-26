@@ -458,7 +458,7 @@ pub fn level_room_in(screen: Rect, visible: Rect, bar_bottom: Option<f32>, depth
 pub fn level(ui: &mut Ui, depth: usize, nav: &mut Nav, rows: impl FnOnce(&mut Ui, &mut Nav)) {
     let ctx = ui.ctx().clone();
     let level = depth.saturating_sub(1);
-    nav.begin_level(level, find_menu_root(ui).id);
+    nav.begin_level(level, find_menu_root(ui).scope_id);
     let screen = ctx.content_rect();
     // Only the part of the window on its monitor, clear of the taskbar, can be seen (#315).
     let visible = crate::work_area::visible_rect(&ctx);
@@ -477,8 +477,13 @@ pub fn level(ui: &mut Ui, depth: usize, nav: &mut Nav, rows: impl FnOnce(&mut Ui
     // pt, on the first): a scroll area never grows past that, so every menu stuck at that height
     // and scrolled even on a tall window (#235). Ask for the room the window has; auto-shrink then
     // fits the area to its rows, so a menu scrolls only when they don't fit.
-    let out = egui::ScrollArea::vertical()
-        .id_salt(("menu-level", depth))
+    // The arrows' scroll from the last frame (egui 0.37 keeps the offset private: set it here).
+    let pending: Option<f32> = ctx.data_mut(|d| d.remove_temp(key.with("target")));
+    let mut area = egui::ScrollArea::vertical().id_salt(("menu-level", depth));
+    if let Some(y) = pending {
+        area = area.vertical_scroll_offset(y);
+    }
+    let out = area
         .max_height(height)
         .min_scrolled_height(height)
         .scroll_source(egui::containers::scroll_area::ScrollSource::ALL)
@@ -501,7 +506,7 @@ pub fn level(ui: &mut Ui, depth: usize, nav: &mut Nav, rows: impl FnOnce(&mut Ui
     let t = crate::theme::Tokens::get(&ctx);
     let x = ui.min_rect().x_range();
     let max = (out.content_size.y - out.inner_rect.height()).max(0.0);
-    let offset = out.state.offset.y;
+    let offset = out.state.clamped_offset().y;
     let dt = ctx.input(|i| i.stable_dt).clamp(0.0, 0.1);
     let mut target = offset;
     for (strip, dir, live) in [(up, -1.0, offset > 0.5), (down, 1.0, offset < max - 0.5)] {
@@ -517,7 +522,7 @@ pub fn level(ui: &mut Ui, depth: usize, nav: &mut Nav, rows: impl FnOnce(&mut Ui
         let id = key.with(dir < 0.0);
         let r = ui.interact(strip, id, Sense::hover());
         let label = if dir < 0.0 { "Scroll menu up" } else { "Scroll menu down" };
-        r.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, live, tl!(label)));
+        r.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, live, tl!(label)));
         if live && pointer_on(ui, strip) {
             target = (offset + dir * SPEED * dt.max(1.0 / 120.0)).clamp(0.0, max);
             ctx.request_repaint();
@@ -531,9 +536,7 @@ pub fn level(ui: &mut Ui, depth: usize, nav: &mut Nav, rows: impl FnOnce(&mut Ui
         }
     }
     if target != offset {
-        let mut st = out.state;
-        st.offset.y = target;
-        st.store(&ctx, out.id);
+        ctx.data_mut(|d| d.insert_temp(key.with("target"), target));
     }
 }
 

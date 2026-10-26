@@ -901,7 +901,7 @@ pub fn panel(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                 shown_set = Some(set);
                 let collapsed = app.ui.actions.collapsed_sets.iter().any(|c| c == set);
                 let (hr, hresp) = ui.allocate_exact_size(vec2(ui.available_width(), 24.0), Sense::click());
-                hresp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, !collapsed, set));
+                hresp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, !collapsed, set));
                 if hresp.hovered() {
                     ui.painter().rect_filled(hr, 0.0, t.hover.gamma_multiply(0.5));
                 }
@@ -944,7 +944,7 @@ pub fn panel(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             }
             let button_mode = app.ui.actions.button_mode;
             let sel = app.ui.actions.selected == Some(i) && app.ui.actions.selected_step.is_none();
-            resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, sel, name));
+            resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, sel, name));
             if button_mode {
                 ui.painter().rect_filled(rect, 3.0, button_fill(swatch, &t));
             } else if sel {
@@ -1067,7 +1067,7 @@ pub fn panel(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                     }
                     let label = step_label(id, params);
                     let selected = app.ui.actions.selected == Some(i) && app.ui.actions.selected_step == Some(step);
-                    response.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, selected, &label));
+                    response.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected, &label));
                     if selected {
                         ui.painter().rect_filled(r, 0.0, t.row_selected);
                     } else if response.hovered() {
@@ -1085,7 +1085,7 @@ pub fn panel(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                         ui.id().with(("action-step-check", i, step)),
                         Sense::click(),
                     );
-                    check.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::Checkbox, true, on, format!("{}: {label}", tl!("Include in playback"))));
+                    check.widget_info(|| egui::WidgetInfo::selected(egui::Role::CheckBox, true, on, format!("{}: {label}", tl!("Include in playback"))));
                     paint_check(ui, check.rect, on, &t);
                     // Photoshop's dialog column: playback shows the step's dialog, seeded with its
                     // recorded values, and continues when it is confirmed.
@@ -1097,7 +1097,7 @@ pub fn panel(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                     );
                     // A toggle button, not a check box, so the check column stays the only CheckBox role.
                     dialog.widget_info(|| {
-                        egui::WidgetInfo::selected(egui::WidgetType::Button, true, with_dialog, format!("{}: {label}", tl!("Show dialog during playback")))
+                        egui::WidgetInfo::selected(egui::Role::Button, true, with_dialog, format!("{}: {label}", tl!("Show dialog during playback")))
                     });
                     crate::icons::paint(ui, dialog.rect, "message-square", 11.0, if with_dialog { t.icon } else { t.text_faint.gamma_multiply(0.45) });
                     let dialog = dialog.on_hover_text(tl!("Show dialog during playback"));
@@ -1156,7 +1156,7 @@ pub fn panel(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             begin_recording(app, true);
         }
         let play = crate::icons::button(ui, "play", 24.0, false, tl!("Play selection"));
-        play.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Play selection")));
+        play.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("Play selection")));
         if play.clicked() {
             play_idx = playback_selection(app);
         }
@@ -1166,14 +1166,14 @@ pub fn panel(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         let can_delete = app.ui.actions.selected.is_some() && (!recording_now || app.ui.actions.selected_step.is_some());
         ui.add_enabled_ui(can_delete, |ui| {
             let response = crate::icons::button(ui, "trash", 24.0, false, tl!("Delete"));
-            response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, can_delete, tl!("Delete")));
+            response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, can_delete, tl!("Delete")));
             if response.clicked() {
                 delete_selection(app);
             }
         });
         let mode_label = if app.ui.actions.button_mode { tl!("Button Mode On") } else { tl!("Button Mode") };
         let mode_button = ui.add_enabled(!recording_now, egui::Button::new(mode_label).small()).on_hover_text(tl!("Button Mode"));
-        mode_button.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, !recording_now, mode_label));
+        mode_button.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, !recording_now, mode_label));
         if mode_button.clicked() {
             app.ui.actions.button_mode = !app.ui.actions.button_mode;
         }

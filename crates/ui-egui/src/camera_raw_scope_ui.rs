@@ -345,7 +345,7 @@ fn readout_text(value: Option<Value>) -> String {
 fn warning(ui: &mut egui::Ui, rect: Rect, mask: u8, on: &mut bool, label: &str) {
     let t = Tokens::get(ui.ctx());
     let response = ui.interact(rect, ui.id().with(label), Sense::click()).on_hover_text(label);
-    response.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::Checkbox, ui.is_enabled(), *on, label));
+    response.widget_info(|| egui::WidgetInfo::selected(egui::Role::CheckBox, ui.is_enabled(), *on, label));
     let r = rect.shrink(3.0);
     ui.painter().add(egui::Shape::convex_polygon(
         vec![pos2(r.center().x, r.top()), r.left_bottom(), r.right_bottom()],
@@ -381,7 +381,7 @@ fn graph(ui: &mut egui::Ui, d: &mut CameraRawDialog, view: &mut CameraRawScopeSt
     let t = Tokens::get(ui.ctx());
     let (rect, response) = ui.allocate_exact_size(vec2(ui.available_width().max(1.0), height), Sense::click_and_drag());
     d.scope.rect = Some(rect);
-    response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Other, ui.is_enabled(), tl!("Tone Histogram")));
+    response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Unknown, ui.is_enabled(), tl!("Tone Histogram")));
     ui.painter().rect_filled(rect, t.radius_sm, t.histogram_background());
     let plot = rect.shrink(4.0);
     // Camera Raw's scale: the typical columns set it and a shadow or highlight spike runs off the top.

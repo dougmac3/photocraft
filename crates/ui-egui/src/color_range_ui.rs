@@ -408,7 +408,7 @@ fn eyedropper(ui: &mut egui::Ui, badge: &str, selected: bool, label: &str) -> eg
         let at = r.rect.right_bottom() - vec2(5.0, 6.0);
         ui.painter().text(at, egui::Align2::CENTER_CENTER, badge, crate::theme::semibold(12.0), if selected { t.accent_text } else { t.text });
     }
-    r.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::Button, ui.is_enabled(), selected, label));
+    r.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, ui.is_enabled(), selected, label));
     r
 }
 
@@ -512,7 +512,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
             Some(e) => format!("Color Range preview unavailable: {e}"),
             None => tl!("Color Range preview").to_string(),
         };
-        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Image, ui.is_enabled(), &label));
+        resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Image, ui.is_enabled(), &label));
         ui.add_space(10.0);
         ui.vertical(|ui| {
             ui.add_enabled_ui(c.sampling, |ui| {

@@ -22,6 +22,7 @@ static HACK: LazyLock<Vec<u8>> = LazyLock::new(|| inflate(deflated!("Hack-Regula
 static NOTO_EMOJI: LazyLock<Vec<u8>> = LazyLock::new(|| inflate(deflated!("NotoEmoji-Regular")));
 static UBUNTU_LIGHT: LazyLock<Vec<u8>> = LazyLock::new(|| inflate(deflated!("Ubuntu-Light")));
 static EMOJI_ICON: LazyLock<Vec<u8>> = LazyLock::new(|| inflate(deflated!("emoji-icon-font")));
+static EGUI_ICONS: LazyLock<Vec<u8>> = LazyLock::new(|| inflate(deflated!("egui-icons")));
 
 /// Inflated fonts are bounded (the largest is 0.42 MB), so corrupt data can't exhaust memory.
 const MAX_FONT_BYTES: u64 = 16 << 20;
@@ -46,12 +47,14 @@ pub fn definitions() -> FontDefinitions {
 /// egui's default definitions, built from the deflated copies.
 fn from_deflated() -> FontDefinitions {
     let mut fonts = FontDefinitions::empty();
-    let faces: [(&str, &'static [u8], f32); 4] = [
+    let faces: [(&str, &'static [u8], f32); 5] = [
         ("Hack", HACK.as_slice(), 1.0),
         // egui draws its emoji fonts a little smaller.
         ("NotoEmoji-Regular", NOTO_EMOJI.as_slice(), 0.81),
         ("Ubuntu-Light", UBUNTU_LIGHT.as_slice(), 1.0),
         ("emoji-icon-font", EMOJI_ICON.as_slice(), 0.90),
+        // egui 0.37: the few `egui::special_emojis` icons, ahead of the emoji fonts.
+        ("egui-icons", EGUI_ICONS.as_slice(), 0.90),
     ];
     for (name, bytes, scale) in faces {
         if bytes.is_empty() {
@@ -62,8 +65,8 @@ fn from_deflated() -> FontDefinitions {
         fonts.font_data.insert(name.to_owned(), Arc::new(data));
     }
     let stack = |names: &[&str]| -> Vec<String> { names.iter().filter(|n| fonts.font_data.contains_key(**n)).map(|n| (*n).to_owned()).collect() };
-    let mono = stack(&["Hack", "Ubuntu-Light", "NotoEmoji-Regular", "emoji-icon-font"]);
-    let proportional = stack(&["Ubuntu-Light", "NotoEmoji-Regular", "emoji-icon-font"]);
+    let mono = stack(&["Hack", "Ubuntu-Light", "egui-icons", "NotoEmoji-Regular", "emoji-icon-font"]);
+    let proportional = stack(&["Ubuntu-Light", "egui-icons", "NotoEmoji-Regular", "emoji-icon-font"]);
     fonts.families.insert(FontFamily::Monospace, mono);
     fonts.families.insert(FontFamily::Proportional, proportional);
     fonts

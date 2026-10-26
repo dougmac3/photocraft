@@ -170,8 +170,8 @@ mod tests {
                     ui.add_enabled_ui(s.2, |ui| crate::widgets::value_field(ui, &mut s.0, 0.0..=1000.0, "px", 90.0));
                     ui.allocate_space(vec2(1000.0, 1000.0));
                 });
-                s.1 = out.state.offset.y;
-                s.3 = out.state.offset.x;
+                s.1 = out.state.clamped_offset().y;
+                s.3 = out.state.clamped_offset().x;
             },
             (value, 0.0, true, 0.0),
         );
@@ -187,7 +187,7 @@ mod tests {
     fn wheel(h: &mut Harness<'static, State>, at: Pos2, lines: f32, modifiers: Modifiers) {
         h.hover_at(at);
         h.run_steps(1);
-        h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, lines), phase: egui::TouchPhase::Move, modifiers });
+        h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, lines), phase: egui::TouchPhase::Move, modifiers, source: egui::MouseWheelSource::Unknown });
         h.run_steps(4);
     }
 
@@ -226,7 +226,7 @@ mod tests {
         h.hover_at(below);
         h.run_steps(1);
         let down =
-            || egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, -1.0), phase: egui::TouchPhase::Move, modifiers: Modifiers::NONE };
+            || egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, -1.0), phase: egui::TouchPhase::Move, modifiers: Modifiers::NONE, source: egui::MouseWheelSource::Unknown };
         h.event(down());
         h.run_steps(1);
         // Still the same gesture as the pointer reaches a field.
@@ -251,7 +251,7 @@ mod tests {
                 let at = field(&h).center();
                 h.hover_at(at);
                 h.run_steps(1);
-                h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(1.0, 0.0), phase: egui::TouchPhase::Move, modifiers: m });
+                h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(1.0, 0.0), phase: egui::TouchPhase::Move, modifiers: m, source: egui::MouseWheelSource::Unknown });
                 h.run_steps(4);
                 assert_eq!(h.state().0, want, "focus {focus}, {m:?}");
             }
@@ -265,7 +265,7 @@ mod tests {
         let mut h = harness(100.0);
         h.hover_at(field(&h).center());
         h.run_steps(1);
-        let ev = |phase, y| egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, y), phase, modifiers: Modifiers::NONE };
+        let ev = |phase, y| egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, y), phase, modifiers: Modifiers::NONE, source: egui::MouseWheelSource::Unknown };
         h.event(ev(egui::TouchPhase::Start, 0.0));
         h.run_steps(1);
         h.event(ev(egui::TouchPhase::Move, 2.0));
@@ -281,7 +281,7 @@ mod tests {
         let mut h = harness(100.0);
         h.hover_at(field(&h).center());
         h.run_steps(1);
-        let ev = |phase, x| egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(x, 0.0), phase, modifiers: Modifiers::NONE };
+        let ev = |phase, x| egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(x, 0.0), phase, modifiers: Modifiers::NONE, source: egui::MouseWheelSource::Unknown };
         h.event(ev(egui::TouchPhase::Start, 0.0));
         h.run_steps(1);
         h.event(ev(egui::TouchPhase::Move, -2.0));
@@ -298,7 +298,7 @@ mod tests {
         let mut h = harness_stepping(100.0, 1.0 / 30.0);
         h.hover_at(field(&h).center());
         h.run_steps(1);
-        let ev = |phase, unit, d| egui::Event::MouseWheel { unit, delta: d, phase, modifiers: Modifiers::NONE };
+        let ev = |phase, unit, d| egui::Event::MouseWheel { unit, delta: d, phase, modifiers: Modifiers::NONE, source: egui::MouseWheelSource::Unknown };
         h.event(ev(egui::TouchPhase::Start, egui::MouseWheelUnit::Point, vec2(0.0, 0.0)));
         h.run_steps(1);
         // A short swipe, so the field stays in view.
@@ -322,7 +322,7 @@ mod tests {
         h.run_steps(1);
         // Up, so the panel (already at the top) doesn't move the field.
         let up =
-            || egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, 1.0), phase: egui::TouchPhase::Move, modifiers: Modifiers::NONE };
+            || egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Line, delta: vec2(0.0, 1.0), phase: egui::TouchPhase::Move, modifiers: Modifiers::NONE, source: egui::MouseWheelSource::Unknown };
         h.event(up());
         h.run_steps(1);
         assert_eq!(h.state().0, 101.0);

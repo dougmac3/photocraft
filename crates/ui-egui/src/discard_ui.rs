@@ -118,21 +118,21 @@ pub fn guard_window_close(app: &mut PhotocraftApp, ctx: &egui::Context) {
         return;
     }
     if !app.allow_close && intercept(app, EXIT, &Value::Null) {
-        ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
-        ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
+        crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::CancelClose);
+        crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Focus);
         return;
     }
     // A save or print worker must finish its external side effect before the process exits;
     // `jobs_ui` repeats the close after completion and keeps errors visible.
     if app.saving() || app.printing() {
-        ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+        crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::CancelClose);
         app.jobs.close_after_saves = true;
         return;
     }
     // Leaving: through the platform's own quit where there is one (see `Services::quit`), with
     // the window left open for it to close.
     if let Some(quit) = app.services.quit.as_mut() {
-        ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+        crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::CancelClose);
         quit();
     }
 }
@@ -179,7 +179,7 @@ fn advance(app: &mut PhotocraftApp, ctx: &egui::Context) {
     let Some(Prompt { id, mut params, target, .. }) = app.discard.take() else { return };
     if id == EXIT {
         app.allow_close = true;
-        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+        crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Close);
         return;
     }
     if let Some(target) = target {

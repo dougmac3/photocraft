@@ -883,7 +883,11 @@ pub fn install_fonts_with(ctx: &egui::Context, cjk: crate::cjk_fonts::Sources) {
     for (name, data) in &mut fonts.font_data {
         size_ui_font(ctx, name, Arc::make_mut(data));
     }
-    ctx.set_fonts(fonts);
+    if crate::menus::fossa_hosted() {
+        add_hosted_fonts(ctx, &fonts);
+    } else {
+        ctx.set_fonts(fonts);
+    }
     // egui keeps the first plugin of a type, so a re-install (language change) resets the
     // existing one. The new definitions land next pass: the plugin must not rescale before then.
     if ctx
@@ -898,6 +902,34 @@ pub fn install_fonts_with(ctx: &egui::Context, cjk: crate::cjk_fonts::Sources) {
     // CJK, Thai, Arabic, Indic and other script fallback fonts (craft-fonts' Japanese ones if built in, then
     // the system's) are registered on demand (cjk_fonts.rs).
     crate::cjk_fonts::install_with(ctx, cjk);
+}
+
+/// The family PhotoCraft's text uses for `family` inside Fossa: its own stacks under its own names,
+/// so Fossa's Proportional and Monospace stay as Fossa set them.
+pub(crate) fn hosted_family(family: &FontFamily) -> FontFamily {
+    match family {
+        FontFamily::Proportional => FontFamily::Name("photocraft".into()),
+        FontFamily::Monospace => FontFamily::Name("photocraft-mono".into()),
+        other => other.clone(),
+    }
+}
+
+/// Inside Fossa: add PhotoCraft's stacks to the fonts the window already has (`add_font`), never
+/// replace them. Each face goes in under a name of its own per family, so a name Fossa or another
+/// desk already uses is never taken over, and each family keeps PhotoCraft's order.
+fn add_hosted_fonts(ctx: &egui::Context, fonts: &FontDefinitions) {
+    use egui::epaint::text::{FontInsert, FontPriority, InsertFontFamily};
+    for (family, stack) in &fonts.families {
+        let target = hosted_family(family);
+        for face in stack {
+            let Some(data) = fonts.font_data.get(face) else { continue };
+            ctx.add_font(FontInsert {
+                name: format!("photocraft:{target:?}:{face}"),
+                data: (**data).clone(),
+                families: vec![InsertFontFamily { family: target.clone(), priority: FontPriority::Lowest }],
+            });
+        }
+    }
 }
 
 /// Has [`install_fonts`]'s stack reached the active fonts? Before that (the first pass, when
@@ -1048,6 +1080,12 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind) {
             (TextStyle::Monospace, FontId::monospace(12.0)),
         ]
         .into();
+        // Inside Fossa the plain families are Fossa's: PhotoCraft's text uses its own (`install_fonts_with`).
+        if crate::menus::fossa_hosted() {
+            for f in s.text_styles.values_mut() {
+                f.family = hosted_family(&f.family);
+            }
+        }
         s.spacing.item_spacing = egui::vec2(8.0, 6.0);
         s.spacing.button_padding = egui::vec2(10.0, 4.0);
         s.spacing.interact_size = egui::vec2(24.0, 24.0);

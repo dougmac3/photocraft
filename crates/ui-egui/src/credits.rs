@@ -456,7 +456,7 @@ fn cell(ui: &mut egui::Ui, numeric: bool, text: &str) {
 fn header_cell(ui: &mut egui::Ui, t: &crate::theme::Tokens, label: &str, numeric: bool, sort: Option<Option<bool>>) -> egui::Response {
     let rect = ui.max_rect();
     let resp = ui.allocate_rect(rect, if sort.is_some() { egui::Sense::click() } else { egui::Sense::hover() });
-    let kind = if sort.is_some() { egui::WidgetType::Button } else { egui::WidgetType::Label };
+    let kind = if sort.is_some() { egui::Role::Button } else { egui::Role::Label };
     resp.widget_info(|| egui::WidgetInfo::labeled(kind, true, label));
     let resp = if sort.is_some() { resp.on_hover_cursor(egui::CursorIcon::PointingHand) } else { resp };
     let current = sort.flatten();

@@ -519,7 +519,7 @@ pub(crate) fn copy_selection(app: &PhotocraftApp, ctx: &egui::Context) -> Option
 /// Edit > Paste during a type edit: ask the window for the clipboard text, which arrives as a
 /// Paste event next frame and replaces the selection there (like ⌘V).
 pub(crate) fn request_paste(ctx: &egui::Context) {
-    ctx.send_viewport_cmd(egui::ViewportCommand::RequestPaste);
+    crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::RequestPaste);
 }
 
 /// Select > All during a type edit selects every character (like ⌘A).
@@ -1797,7 +1797,7 @@ pub(crate) fn family_picker_in(
                 let mut button = egui::Button::selectable(selected == Some(i), label).truncate().stroke(egui::Stroke::NONE);
                 if let Some((size, [_, h])) = preview {
                     button = button
-                        .right_text(egui::Atom::custom(ui.id().with(("font-sample", f)), egui::vec2(crate::font_preview::slot_width(ui.ctx(), f, size), h)));
+                        .right_text(egui::Atom::custom(egui::IdSalt::new((ui.id(), "font-sample", f)), egui::vec2(crate::font_preview::slot_width(ui.ctx(), f, size), h)));
                 }
                 let response = ui.add_sized([330.0, row_h], button);
                 if stepped == Some(i) {
@@ -2214,7 +2214,7 @@ pub fn options_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     }
     let (r, icon) = ui.allocate_exact_size(egui::vec2(18.0, 22.0), egui::Sense::hover());
     crate::icons::paint(ui, r, "type", 13.0, t.icon);
-    icon.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Label, true, tl!("Font size")));
+    icon.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Label, true, tl!("Font size")));
     // Photoshop's "T" scrubs the size field beside it, like the Character panel's icons (#6437).
     crate::widgets::scrub_option_icon(ui, &icon, tl!("Font size"));
     let (unit, label) = type_unit(app);
@@ -2276,7 +2276,7 @@ pub fn options_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     ui.painter().rect_filled(rect, 2.0, Color32::from_rgb(q(c[0]), q(c[1]), q(c[2])));
     ui.painter().rect_stroke(rect, 2.0, Stroke::new(1.0, t.field_border), egui::StrokeKind::Outside);
     let resp = resp.on_hover_text(tl!("Set the text color"));
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Set the text color")));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("Set the text color")));
     if resp.clicked() {
         open_color_picker(app, [c[0], c[1], c[2]]);
     }
@@ -2510,7 +2510,7 @@ fn direction_button(ui: &mut egui::Ui, d: photocraft_doc::text::TextDirection, s
     let tint = crate::icons::button_chrome(ui, r, selected, resp.hovered());
     direction_glyph(ui.painter(), egui::Rect::from_center_size(r.center(), egui::vec2(14.0, 16.0)), d, tint);
     let tip = tip.to_string();
-    resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::Button, true, selected, &tip));
+    resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected, &tip));
     resp.on_hover_text(tip)
 }
 
@@ -2542,7 +2542,7 @@ fn toggle_cell(ui: &mut egui::Ui, w: f32, on: bool, tip: &str, paint: impl FnOnc
         },
     );
     let tip = tip.to_string();
-    resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::Button, enabled, on, &tip));
+    resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, enabled, on, &tip));
     resp.on_hover_text(tl!(&tip)).clicked()
 }
 
@@ -2764,7 +2764,7 @@ fn type_sections(app: &mut PhotocraftApp, ui: &mut egui::Ui, character: bool, pa
                 ui.painter().rect_filled(rect, t.radius_sm, Color32::from_rgb(q(rgb[0]), q(rgb[1]), q(rgb[2])));
                 ui.painter().rect_stroke(rect, t.radius_sm, Stroke::new(1.0, t.field_border), egui::StrokeKind::Inside);
                 let resp = resp.on_hover_text(tl!("Text color"));
-                resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Text color")));
+                resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, tl!("Text color")));
                 if resp.clicked() {
                     open_color_picker(app, rgb);
                 }

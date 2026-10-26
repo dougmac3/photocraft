@@ -49,6 +49,7 @@ fn reported_menus_stay_above_the_panel_when_the_window_position_is_unknown() {
                     delta: egui::vec2(0.0, -60.0),
                     modifiers: egui::Modifiers::NONE,
                     phase: egui::TouchPhase::Move,
+                    source: egui::MouseWheelSource::Unknown,
                 });
                 h.run_steps(2);
             }
@@ -168,6 +169,7 @@ fn the_mouse_wheel_scrolls_a_long_menu() {
                 delta: egui::vec2(0.0, -60.0),
                 modifiers: egui::Modifiers::NONE,
                 phase: egui::TouchPhase::Move,
+                source: egui::MouseWheelSource::Unknown,
             });
             h.run_steps(2);
         }
@@ -415,6 +417,7 @@ fn a_short_window_still_scrolls_the_file_menu_to_its_last_row() {
             delta: egui::vec2(0.0, -60.0),
             modifiers: egui::Modifiers::NONE,
             phase: egui::TouchPhase::Move,
+            source: egui::MouseWheelSource::Unknown,
         });
         h.run_steps(2);
     }
@@ -569,6 +572,7 @@ fn menus_stay_above_the_taskbar_and_scroll_to_their_last_row() {
                     delta: egui::vec2(0.0, 120.0),
                     modifiers: egui::Modifiers::NONE,
                     phase: egui::TouchPhase::Move,
+                    source: egui::MouseWheelSource::Unknown,
                 });
                 h.run_steps(1);
                 if in_view(&h, 0) {
@@ -905,6 +909,7 @@ fn a_scrolled_menu_reopens_and_stays_open_with_a_hidden_submenu_row_under_its_ti
                 delta: egui::vec2(0.0, dy),
                 modifiers: Modifiers::NONE,
                 phase: egui::TouchPhase::Move,
+                source: egui::MouseWheelSource::Unknown,
             });
             h.run_steps(1);
         };

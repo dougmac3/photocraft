@@ -345,7 +345,7 @@ impl PhotocraftApp {
                     // Bring the window forward when another app (Finder, the Dock, Explorer via a
                     // second launch) asked us to open; restore it first if it was minimized.
                     if ctx.input(|i| i.viewport().minimized) == Some(true) {
-                        ctx.send_viewport_cmd(egui::ViewportCommand::Minimized(false));
+                        crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Minimized(false));
                     }
                     // Native Wayland lets a window come forward only with the launcher's activation
                     // token, which winit can't apply to an existing window (its focus is a no-op
@@ -356,10 +356,10 @@ impl PhotocraftApp {
                     } else {
                         egui::ViewportCommand::Focus
                     };
-                    ctx.send_viewport_cmd(raise);
+                    crate::menus::viewport_cmd(&ctx, raise);
                     ctx.request_repaint();
                 }
-                OsEvent::Quit => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
+                OsEvent::Quit => crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Close),
             }
         }
     }

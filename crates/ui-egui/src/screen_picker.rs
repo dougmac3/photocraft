@@ -297,21 +297,21 @@ pub fn show(ctx: &Context) {
             {
                 let s = lock(&shared);
                 if s.generation != generation || s.owner.is_none() {
-                    ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+                    crate::menus::viewport_cmd(ui.ctx(), egui::ViewportCommand::Close);
                     return;
                 }
             }
             frame(ui, &shared, &image, &texture, conversion.as_deref());
             // Showing a new native viewport before this frame is painted can briefly cover
             // the screen with the window's default white clear color.
-            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Visible(true));
+            crate::menus::viewport_cmd(ui.ctx(), egui::ViewportCommand::Visible(true));
             // Once per picker window (`show` runs every frame, so a local flag would resend it):
             // raise it, and take the keyboard so Esc reaches the picker: a window shown later
             // isn't always given focus by the OS, and the picker covers the screen (#4291).
             let raised = Id::new(("screen-picker-raised", ui.ctx().viewport_id()));
             if !ui.ctx().data_mut(|d| std::mem::replace(d.get_temp_mut_or_default::<bool>(raised), true)) {
-                ui.ctx().send_viewport_cmd(egui::ViewportCommand::WindowLevel(egui::WindowLevel::AlwaysOnTop));
-                ui.ctx().send_viewport_cmd(egui::ViewportCommand::Focus);
+                crate::menus::viewport_cmd(ui.ctx(), egui::ViewportCommand::WindowLevel(egui::WindowLevel::AlwaysOnTop));
+                crate::menus::viewport_cmd(ui.ctx(), egui::ViewportCommand::Focus);
             }
         });
     }

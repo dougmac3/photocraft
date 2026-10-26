@@ -412,6 +412,7 @@ mod tests {
                     delta: vec2(0.0, 1.0),
                     phase: egui::TouchPhase::Move,
                     modifiers: egui::Modifiers { alt: gesture == 1, ..Default::default() },
+                    source: egui::MouseWheelSource::Unknown,
                 }),
                 _ => {
                     h.state_mut().ui.tool = if gesture == 3 { crate::state::Tool::Hand } else { crate::state::Tool::Zoom };

@@ -1089,7 +1089,7 @@ fn print_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Va
                     let drag_id = ui.id().with(("print-position", id));
                     let visible = img.intersect(page).intersect(ui.clip_rect());
                     let response = ui.interact(visible, drag_id, egui::Sense::drag()).on_hover_cursor(egui::CursorIcon::Grab);
-                    response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Image, true, tl!("Print preview image")));
+                    response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Image, true, tl!("Print preview image")));
                     // Keep a fixed layout and press origin for the whole gesture: rounding and
                     // the transition from Center must never accumulate or move the grab point.
                     if response.drag_started_by(egui::PointerButton::Primary)

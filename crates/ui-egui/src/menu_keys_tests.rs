@@ -89,6 +89,7 @@ fn alt_with_a_wheel_scroll_or_a_lost_focus_is_no_tap() {
             delta: egui::vec2(0.0, -1.0),
             phase: egui::TouchPhase::Move,
             modifiers: egui::Modifiers::ALT,
+            source: egui::MouseWheelSource::Unknown,
         },
         egui::Modifiers::ALT,
     );

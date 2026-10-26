@@ -215,7 +215,7 @@ fn align_and_distribute(app: &PhotocraftApp, ui: &mut egui::Ui, run: &mut Vec<(S
             }
             align_glyph(ui, r, kind, if on { t.icon } else { t.text_faint });
             let tip = crate::i18n::fmt(tl!("Align {what}"), &[("what", tl!(&label))]);
-            resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, on, &tip));
+            resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, on, &tip));
             if resp.on_hover_text(tip).clicked() {
                 run.push((id, json!({})));
             }

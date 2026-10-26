@@ -128,7 +128,7 @@ pub fn fit_window(ctx: &egui::Context) -> bool {
     if maximized == Some(true) || fullscreen == Some(true) || !m.is_finite() || !outer.is_finite() || fits(outer.size(), m) {
         return false;
     }
-    ctx.send_viewport_cmd(egui::ViewportCommand::Maximized(true));
+    crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Maximized(true));
     true
 }
 

@@ -91,13 +91,13 @@ fn write_clipping_indicator_preview() {
             for scale in [1.0, 2.0] {
                 let mut h = harness(theme, width, scale, true);
                 alt_click_line(&mut h);
-                h.ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
+                let (tx, rx) = std::sync::mpsc::channel();
+                h.ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(egui::ScreenshotCallback::new(move |image| {
+                    let _ = tx.send(image);
+                })));
                 h.step();
                 h.step();
-                let image = h
-                    .ctx
-                    .input(|input| input.events.iter().find_map(|event| if let Event::Screenshot { image, .. } = event { Some(image.clone()) } else { None }))
-                    .unwrap();
+                let image = rx.try_recv().unwrap();
                 let rgba = image.pixels.iter().flat_map(|pixel| pixel.to_array()).collect();
                 let image =
                     photocraft_codecs::Image::from_u8(image.size[0] as u32, image.size[1] as u32, photocraft_codecs::ChannelLayout::Rgba, rgba).unwrap();

@@ -123,7 +123,7 @@ pub fn paint(
         let template = "{verb} {mask} {layer}";
         resp.widget_info(|| {
             egui::WidgetInfo::labeled(
-                egui::WidgetType::Button,
+                egui::Role::Button,
                 true,
                 crate::i18n::fmt(tl!(template), &[("verb", tl!(verb)), ("mask", tl!(what)), ("layer", &name)]),
             )

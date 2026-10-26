@@ -1229,7 +1229,7 @@ fn dispatch(app: &mut PhotocraftApp, ctx: &egui::Context, req: &ControlRequest) 
         }
         "ui.resize" => {
             let (w, h) = (p.get("width").and_then(Value::as_f64).unwrap_or(1280.0), p.get("height").and_then(Value::as_f64).unwrap_or(800.0));
-            ctx.send_viewport_cmd(egui::ViewportCommand::InnerSize(egui::vec2(w as f32, h as f32)));
+            crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::InnerSize(egui::vec2(w as f32, h as f32)));
             ok(Value::Null)
         }
         "ui.gpu.simulateLoss" => {
@@ -1256,9 +1256,9 @@ fn dispatch(app: &mut PhotocraftApp, ctx: &egui::Context, req: &ControlRequest) 
             ok(json!({"wasActive": active, "gpuInfo": app.perf.gpu_info}))
         }
         "ui.focus" => {
-            ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
-            ctx.send_viewport_cmd(egui::ViewportCommand::Minimized(false));
-            ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
+            crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Visible(true));
+            crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Minimized(false));
+            crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Focus);
             ctx.request_repaint();
             ok(Value::Null)
         }
@@ -1271,7 +1271,7 @@ fn dispatch(app: &mut PhotocraftApp, ctx: &egui::Context, req: &ControlRequest) 
             };
             // Occluded windows don't render on macOS, so the screenshot would never arrive: raise first.
             if focus.unwrap_or(true) {
-                ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
+                crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Focus);
             }
             // The capture itself is issued by `PhotocraftApp::issue_screenshots` once open/close
             // animations (modals, popups) have settled.
@@ -1327,7 +1327,7 @@ fn dispatch(app: &mut PhotocraftApp, ctx: &egui::Context, req: &ControlRequest) 
         },
         "app.quit" => {
             app.allow_close = true;
-            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+            crate::menus::viewport_cmd(&ctx, egui::ViewportCommand::Close);
             ok(Value::Null)
         }
         other => err(format!("unknown method `{other}`")),

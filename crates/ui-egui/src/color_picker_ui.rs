@@ -537,7 +537,7 @@ fn swatches(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     p.rect_filled(cur, 0.0, c32(orig));
     p.rect_stroke(sw, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
     let click_cur = ui.interact(cur, ui.id().with("cp-current"), Sense::click());
-    click_cur.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), tl!("Click to restore the current colour")));
+    click_cur.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, ui.is_enabled(), tl!("Click to restore the current colour")));
     if click_cur.on_hover_text(tl!("Click to restore the current colour")).clicked() {
         set_rgb(f, orig, Keep::Nothing);
     }
@@ -559,7 +559,7 @@ fn swatches(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
         p.rect_filled(chip, 0.0, c32(near));
         p.rect_stroke(chip, 0.0, Stroke::new(1.0, t.text_dim), StrokeKind::Outside);
         let resp = ui.interact(icon.union(chip), ui.id().with(("cp-warning", slot as i32)), Sense::click());
-        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), tip));
+        resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, ui.is_enabled(), tip));
         if resp.on_hover_text(tip).clicked() {
             set_rgb(f, near, Keep::Nothing);
         }
@@ -598,7 +598,7 @@ fn radio(ui: &mut egui::Ui, on: bool, label: &str) -> bool {
     if on {
         ui.painter().circle_filled(r.center(), 3.0, t.accent);
     }
-    resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::RadioButton, ui.is_enabled(), on, label));
+    resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::RadioButton, ui.is_enabled(), on, label));
     resp.clicked()
 }
 

@@ -93,7 +93,7 @@ fn scrub_zoom_and_alt_wheel_preserve_the_detail_under_the_initial_pointer() {
     let old = zoom(&h);
     h.event(Event::PointerMoved(at));
     h.event(Event::ModifiersChanged(Modifiers::ALT));
-    h.event(Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: vec2(0.0, 100.0), phase: egui::TouchPhase::Move, modifiers: Modifiers::ALT });
+    h.event(Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: vec2(0.0, 100.0), phase: egui::TouchPhase::Move, modifiers: Modifiers::ALT, source: egui::MouseWheelSource::Unknown });
     // Release Alt while the wheel notch is still being smoothed: no residual pan.
     h.event(Event::ModifiersChanged(Modifiers::NONE));
     h.run_steps(10);

@@ -126,7 +126,7 @@ pub fn panel(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         }
         for (index, c) in doc.layer_comps.iter().enumerate() {
             let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), row_h), Sense::click_and_drag());
-            resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, selected == Some(c.id), &c.name));
+            resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected == Some(c.id), &c.name));
             resp.dnd_set_drag_payload(DragComp { document: doc.id, comp: c.id });
             if let Some(source) = resp.dnd_hover_payload::<DragComp>()
                 && source.document == doc.id

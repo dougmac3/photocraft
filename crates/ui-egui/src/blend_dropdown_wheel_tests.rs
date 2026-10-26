@@ -52,6 +52,7 @@ fn wheel(h: &mut Harness<'_, PhotocraftApp>, at: Pos2, lines: f32) {
         delta: vec2(0.0, lines),
         phase: egui::TouchPhase::Move,
         modifiers: Default::default(),
+        source: egui::MouseWheelSource::Unknown,
     });
     h.run_steps(3);
 }

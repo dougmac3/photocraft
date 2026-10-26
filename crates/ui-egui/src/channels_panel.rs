@@ -145,7 +145,7 @@ pub fn show(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                 icons::paint(ui, eye, if visible { "eye" } else { "eye-off" }, 14.0, if visible { t.icon } else { t.text_faint });
             }
             let eye_resp = eye_resp.on_hover_text(if row == Row::LayerMask { tl!("Show the layer mask as an overlay") } else { tl!("Toggle visibility") });
-            eye_resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, format!("Visibility {name}")));
+            eye_resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, format!("Visibility {name}")));
             let layer_id = masked.as_ref().map(|l| l.id.0);
             if eye_resp.clicked() {
                 let view_cmd = photocraft_engine::mask_view_cmds::ID.to_string();
@@ -167,7 +167,7 @@ pub fn show(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             }
             drawn.push((name.clone(), thumb));
             // Rows are painted: name them for screen readers and UI tests.
-            resp.widget_info(|| egui::WidgetInfo::selected(egui::WidgetType::SelectableLabel, true, selected, &name));
+            resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, selected, &name));
             // Spot channels: a swatch of the ink on the thumbnail corner.
             if let Row::Alpha(i) = row
                 && let Some((ink, _)) = doc.channels[i].spot

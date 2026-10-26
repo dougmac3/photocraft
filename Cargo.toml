@@ -52,11 +52,11 @@ image = { version = "0.25", default-features = false }
 zune-core = "0.5"
 zune-jpeg = "0.5"
 proptest = "1"
-eframe = { version = "0.36", default-features = false }
+eframe = { version = "0.37.0", default-features = false }
 # Without `default_fonts`, which embeds egui's fonts uncompressed: ui-egui ships them deflated
 # (egui_fonts.rs; the web build's size gate).
-egui = { version = "0.36", default-features = false }
-egui_kittest = "0.36"
+egui = { version = "0.37.0", default-features = false }
+egui_kittest = "0.37.0"
 rfd = "0.17"
 log = "0.4"
 # All date/time conversion goes through chrono (no hand-rolled calendar code beyond the 400-year range extension; AGENTS.md).
@@ -169,3 +169,7 @@ opt-level = "z"
 [profile.wasm-release.package.photocraft-paint]
 opt-level = 3
 
+
+# craft-ui at the workspace's rev is built on egui 0.36; this copy builds on 0.37 (vendor/craft-ui).
+[patch."https://github.com/storytold/craft-libs"]
+craft-ui = { path = "vendor/craft-ui" }

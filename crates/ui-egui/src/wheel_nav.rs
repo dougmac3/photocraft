@@ -382,7 +382,7 @@ mod tests {
     }
 
     fn wheel(delta: Vec2, modifiers: Modifiers) -> Event {
-        Event::MouseWheel { unit: MouseWheelUnit::Line, delta, phase: TouchPhase::Move, modifiers }
+        Event::MouseWheel { unit: MouseWheelUnit::Line, delta, phase: TouchPhase::Move, modifiers, source: egui::MouseWheelSource::Unknown }
     }
 
     const CTRL: Modifiers = Modifiers { ctrl: true, command: true, ..Modifiers::NONE };
@@ -414,7 +414,7 @@ mod tests {
     }
 
     fn wheel_point(delta: Vec2, modifiers: Modifiers) -> Event {
-        Event::MouseWheel { unit: MouseWheelUnit::Point, delta, phase: TouchPhase::Move, modifiers }
+        Event::MouseWheel { unit: MouseWheelUnit::Point, delta, phase: TouchPhase::Move, modifiers, source: egui::MouseWheelSource::Unknown }
     }
 
     fn near(a: Vec2, b: Vec2) -> bool {
@@ -524,6 +524,7 @@ mod tests {
             delta: egui::vec2(0.0, 0.25),
             phase: egui::TouchPhase::Move,
             modifiers: Modifiers { ctrl: true, command: true, ..Modifiers::NONE },
+            source: egui::MouseWheelSource::Unknown,
         };
         let mut raw = RawInput { time: Some(1.0), events: vec![event()], ..Default::default() };
         app.raw_input_hook(&ctx, &mut raw);
@@ -638,7 +639,7 @@ mod tests {
     fn linux_wayland_point_unit_pinch_keeps_mouse_notches_for_sideways_scroll() {
         // Some Wayland compositors report fractional Ctrl-wheel pinch steps in points
         // rather than line units. The delta must not be multiplied by notch twice.
-        let mut point = [Event::MouseWheel { unit: MouseWheelUnit::Point, delta: Vec2::new(0.0, 8.0), phase: TouchPhase::Move, modifiers: CTRL }];
+        let mut point = [Event::MouseWheel { unit: MouseWheelUnit::Point, delta: Vec2::new(0.0, 8.0), phase: TouchPhase::Move, modifiers: CTRL, source: egui::MouseWheelSource::Unknown }];
         assert_eq!(legacy_pinch_to_zoom(&mut point, 1.0, None, 40.0, 0.005), Some(1.0));
         assert!(matches!(point[0], Event::Zoom(f) if (f - (8.0f32 * 0.005).exp()).abs() < 1e-5));
         let mut wheel_only = [wheel(Vec2::new(0.0, 1.0), CTRL)];
