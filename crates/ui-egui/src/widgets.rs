@@ -1759,7 +1759,7 @@ pub fn swatch_popup(swatch: &Response) -> egui::Popup<'static> {
     // Its width is known from the frame after it opened (egui sizes it unseen first).
     let left = ctx.data(|d| d.get_temp::<f32>(key)).or_else(|| {
         let width = popup.get_expected_size()?.x;
-        let screen = ctx.content_rect();
+        let screen = crate::fossa_native::content_rect(&ctx);
         let left = swatch.rect.left().min(screen.right() - width - SLACK).max(screen.left());
         ctx.data_mut(|d| d.insert_temp(key, left));
         Some(left)

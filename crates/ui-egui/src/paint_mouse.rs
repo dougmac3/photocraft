@@ -190,7 +190,7 @@ pub fn show_picker(app: &mut PhotocraftApp, ctx: &egui::Context) {
     // Escape and Enter close it once this frame's edits are in (a typed size applies), unless they
     // end a rename in its rename bar.
     let key_close = app.ui.brush_picker_list.renaming.is_none() && ctx.input(|i| i.key_pressed(egui::Key::Escape) || i.key_pressed(egui::Key::Enter));
-    let screen = ctx.content_rect();
+    let screen = crate::fossa_native::content_rect(&ctx);
     // The picker's content size: the one its grip was dragged to, or the one it last closed with
     // (kept in egui's own memory, which outlives the app's), or the default. The frame's chrome
     // sits around it, and together they keep the whole picker on screen.

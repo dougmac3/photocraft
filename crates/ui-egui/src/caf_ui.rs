@@ -1234,7 +1234,7 @@ pub fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
     }
     upload(app, ctx);
     let t = Tokens::get(ctx);
-    let screen = ctx.content_rect();
+    let screen = crate::fossa_native::content_rect(&ctx);
     let mut action: Option<&str> = None;
     let mut events: Vec<ToolEvent> = Vec::new();
     let mut mods = egui::Modifiers::NONE;

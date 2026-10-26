@@ -74,7 +74,7 @@ pub fn show(app: &mut PhotocraftApp, ctx: &Context) {
     }
     let active = app.session.active().and_then(|st| st.active_layer).map(|l| l.0);
     let id = menu_id();
-    let screen = ctx.content_rect();
+    let screen = crate::fossa_native::content_rect(&ctx);
     let size = ctx.memory(|m| m.area_rect(id)).map_or(egui::vec2(200.0, 24.0 * menu.layers.len() as f32 + 12.0), |r| r.size());
     let pos = egui::pos2(menu.pos[0].min(screen.right() - size.x).max(screen.left()), menu.pos[1].min(screen.bottom() - size.y).max(screen.top()));
     let mut chosen = None;

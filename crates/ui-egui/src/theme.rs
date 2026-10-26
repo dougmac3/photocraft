@@ -1002,6 +1002,10 @@ impl egui::Plugin for UiFontSizePlugin {
         // Start from the current stack so lazily registered fallback faces are retained.
         let mut fonts = ctx.fonts(|f| f.definitions().clone());
         for (name, data) in &mut fonts.font_data {
+            // Inside Fossa only PhotoCraft's own faces (`add_hosted_fonts`): Fossa's keep their size.
+            if crate::menus::fossa_hosted() && !name.starts_with("photocraft:") {
+                continue;
+            }
             let id = ui_fonts_id().with(name);
             let original = ctx.data(|d| d.get_temp::<f32>(id)).unwrap_or(data.tweak.scale / font_scale(self.applied));
             ctx.data_mut(|d| d.insert_temp(id, original));

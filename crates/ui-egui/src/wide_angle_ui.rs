@@ -258,7 +258,7 @@ pub fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
         return;
     }
     let t = Tokens::get(ctx);
-    let screen = ctx.content_rect();
+    let screen = crate::fossa_native::content_rect(&ctx);
     let mut action: Option<&str> = None;
     let shift = ctx.input(|i| i.modifiers.shift);
     egui::Area::new(egui::Id::new("awa-dialog")).order(egui::Order::Foreground).fixed_pos(screen.min).show(ctx, |ui| {

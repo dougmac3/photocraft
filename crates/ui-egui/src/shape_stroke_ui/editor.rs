@@ -127,9 +127,9 @@ pub fn button(
     // keeps the parent alive; dismissal below considers both parent and child hit regions.
     let popup = egui::Popup::from_response(&response).open(true).close_behavior(egui::PopupCloseBehavior::IgnoreClicks).show(|ui| {
         ui.spacing_mut().item_spacing = vec2(8.0, theme::ROW_GAP);
-        let width = 272.0_f32.min((ui.ctx().content_rect().width() - 24.0).max(160.0));
+        let width = 272.0_f32.min((crate::fossa_native::content_rect(ui.ctx()).width() - 24.0).max(160.0));
         ui.set_width(width);
-        let height = (ui.ctx().content_rect().height() - 40.0).max(80.0);
+        let height = (crate::fossa_native::content_rect(ui.ctx()).height() - 40.0).max(80.0);
         // An Area remembers its previous size. Let a newly selected dashed style grow the
         // body before the ScrollArea measures it, then shrink back to the actual content.
         ui.set_max_height(height);

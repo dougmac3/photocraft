@@ -347,7 +347,7 @@ pub fn resize_grip(ui: &mut egui::Ui, frame: egui::Rect, content: egui::Vec2) ->
     }
     resp.dragged().then(|| {
         let min = egui::vec2(MIN_SIZE[0], MIN_SIZE[1]);
-        let max = (ui.ctx().content_rect().size() - vec2(40.0, 40.0)).max(min);
+        let max = (crate::fossa_native::content_rect(ui.ctx()).size() - vec2(40.0, 40.0)).max(min);
         let start: egui::Vec2 = ui.ctx().data_mut(|d| d.get_temp(start_id)).unwrap_or(content);
         (start + resp.total_drag_delta().unwrap_or_default()).clamp(min, max)
     })

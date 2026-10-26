@@ -210,7 +210,7 @@ pub fn reset(fields: &mut Map<String, Value>) {
 /// image, as Photoshop docks its Blur Tools panel, so the pins under it stay in view. Moved, it
 /// reopens where it was left, like any dialog.
 pub fn first_place(fields: &Map<String, Value>, ctx: &egui::Context) -> Option<egui::Vec2> {
-    owns(fields).then(|| vec2((ctx.content_rect().width() - 480.0).max(0.0), 96.0))
+    owns(fields).then(|| vec2((crate::fossa_native::content_rect(&ctx).width() - 480.0).max(0.0), 96.0))
 }
 
 /// One pin: position as fractions of the bounds, its amount (blur in pixels, Spin's blur angle in

@@ -519,7 +519,7 @@ pub(crate) fn floating(ctx: &egui::Context, d: &mut CameraRawDialog, view: &mut 
         return;
     }
     let r = view.floating_rect.unwrap_or([40.0, 60.0, 400.0, 440.0]);
-    let content = ctx.content_rect();
+    let content = crate::fossa_native::content_rect(&ctx);
     let start = pos2(
         r[0].clamp(content.left(), (content.right() - 200.0).max(content.left())),
         r[1].clamp(content.top(), (content.bottom() - 150.0).max(content.top())),

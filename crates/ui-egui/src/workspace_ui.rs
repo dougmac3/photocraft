@@ -461,7 +461,7 @@ fn dialog(app: &mut PhotocraftApp, ctx: &egui::Context) {
                 "preview32" => {
                     // A slider fills its available width. Keep its field above it, so the
                     // field cannot grow an auto-sized window beyond that width each frame.
-                    ui.set_width((ctx.content_rect().width() - 32.0).clamp(0.0, 320.0));
+                    ui.set_width((crate::fossa_native::content_rect(&ctx).width() - 32.0).clamp(0.0, 320.0));
                     let mut m = f.get("method").and_then(Value::as_str).unwrap_or("exposureGamma").to_string();
                     if crate::widgets::dropdown(
                         ui,

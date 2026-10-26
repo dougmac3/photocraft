@@ -194,13 +194,13 @@ fn show_modal<T>(
     interactive: bool,
     contents: impl FnOnce(&mut egui::Ui) -> T,
 ) -> egui::ModalResponse<T> {
-    modal.show(ctx, |ui| {
+    crate::fossa_native::show_modal(modal, ctx, |ui| {
         // Disable the entire older modal, including its resize grip, not just its body.
         if !interactive {
             ui.disable();
         }
         if let Some(size) = resizable {
-            let max = (ctx.content_rect().size() - egui::vec2(40.0, 40.0)).max(egui::vec2(560.0, 400.0));
+            let max = (crate::fossa_native::content_rect(&ctx).size() - egui::vec2(40.0, 40.0)).max(egui::vec2(560.0, 400.0));
             // No stroke: Resize outlines its contents 2 points out, an inner box inside the
             // dialog's frame that left the title and buttons flush against it (#8199).
             egui::Resize::default()
@@ -301,7 +301,7 @@ pub fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
                 ui.set_min_width(if curves { 300.0 } else { 380.0 });
             }
             // A resizable dialog's contents fill its resizable area (#7420), the others the window.
-            let room = if resizable.is_some() { available.x } else { (ctx.content_rect().width() - 48.0).max(380.0) };
+            let room = if resizable.is_some() { available.x } else { (crate::fossa_native::content_rect(&ctx).width() - 48.0).max(380.0) };
             let wide = crate::prefs_ui::width(&d.fields, room);
             if let Some(w) = wide {
                 ui.set_min_width(w.min(460.0));
@@ -440,7 +440,7 @@ pub fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
                     // Long parameter lists (Flame, Lighting Effects) scroll, so the title and the
                     // OK / Cancel buttons stay inside a small window. The preview window below the
                     // parameters reserves its own space (#3769).
-                    let room = (ctx.content_rect().height() - DIALOG_CHROME - crate::filter_preview_ui::reserved_height(&fields)).max(120.0);
+                    let room = (crate::fossa_native::content_rect(&ctx).height() - DIALOG_CHROME - crate::filter_preview_ui::reserved_height(&fields)).max(120.0);
                     let body = |ui: &mut egui::Ui, fields: &mut serde_json::Map<String, Value>| {
                         egui::ScrollArea::vertical().id_salt(id.with("body")).max_height(room).show(ui, |ui| {
                             if crate::bitmap_dialog::owns(fields) {
@@ -581,7 +581,7 @@ pub fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
         shown.push(if color_picker { modal.response.rect } else { modal.inner });
         // Pin once laid out at its real size (the first frame is an invisible sizing pass).
         if !sizing && (web || pinned.is_none() || drag != egui::Vec2::ZERO) {
-            let screen = ctx.content_rect();
+            let screen = crate::fossa_native::content_rect(&ctx);
             // Keep the whole dialog (and so its title bar) on screen.
             let room = (screen.size() - modal.response.rect.size()).max(egui::Vec2::ZERO);
             let offset = (pinned.unwrap_or(modal.response.rect.min - screen.min) + drag).clamp(egui::Vec2::ZERO, room);

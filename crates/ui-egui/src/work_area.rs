@@ -89,7 +89,8 @@ fn trusted(content: Rect, usable: Rect) -> Rect {
 
 /// [`visible_part`] for this frame's viewport.
 pub fn visible_rect(ctx: &egui::Context) -> Rect {
-    let content = ctx.content_rect();
+    // Inside Fossa, the desk's rect.
+    let content = crate::fossa_native::content_rect(ctx);
     ctx.input(|i| {
         let v = i.viewport();
         visible_part(content, v.monitor_size, v.inner_rect, WindowState::of(v))

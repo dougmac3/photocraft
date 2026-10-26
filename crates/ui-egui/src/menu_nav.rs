@@ -459,7 +459,7 @@ pub fn level(ui: &mut Ui, depth: usize, nav: &mut Nav, rows: impl FnOnce(&mut Ui
     let ctx = ui.ctx().clone();
     let level = depth.saturating_sub(1);
     nav.begin_level(level, find_menu_root(ui).scope_id);
-    let screen = ctx.content_rect();
+    let screen = crate::fossa_native::content_rect(&ctx);
     // Only the part of the window on its monitor, clear of the taskbar, can be seen (#315).
     let visible = crate::work_area::visible_rect(&ctx);
     // The menu frame's margin and stroke around the rows.

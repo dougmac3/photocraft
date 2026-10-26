@@ -147,6 +147,14 @@ pub fn show(app: &crate::PhotocraftApp, ui: &mut egui::Ui, l: &Layer, on_set: bo
     crate::widgets::menu_scroll(ui, |ui| {
         ui.set_min_width(220.0);
         let mut rename = false;
+        // Inside Fossa, first: this layer, alone, into the shot (`fossa_native::Desk::take_shot_requests`).
+        if crate::menus::fossa_hosted() {
+            if ui.button("Add to shot").clicked() {
+                crate::fossa_native::request_shot(ui.ctx(), l.id.0);
+                ui.close();
+            }
+            ui.separator();
+        }
         let has_selection = app.session.active().is_some_and(|s| s.doc.selection.is_some());
         items(app, ui, l, on_set, entries(l, on_set, has_selection), actions);
         ui.separator();

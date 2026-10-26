@@ -155,7 +155,7 @@ impl egui::plugin::Plugin for TextFieldMenu {
         let focused = ctx.memory(|m| m.focused());
         if state.open.is_none()
             && let Some(field) = focused
-            && let Some((pos, has_selection)) = secondary_press_in(&ctx, field, state.last)
+            && let Some((pos, has_selection)) = secondary_press_in(&ctx, field, state.last).filter(|(pos, _)| crate::fossa_native::owns(&ctx, *pos))
         {
             let surrender = ctx.options(|o| o.input_options.surrender_focus_on);
             ctx.options_mut(|o| o.input_options.surrender_focus_on = SurrenderFocusOn::Never);
@@ -216,7 +216,7 @@ pub fn show(ctx: &Context) {
 /// Draw the menu; returns the item chosen this pass.
 fn draw(ctx: &Context, open: &Open) -> Option<Action> {
     let id = menu_id();
-    let screen = ctx.content_rect();
+    let screen = crate::fossa_native::content_rect(&ctx);
     let size = ctx.memory(|m| m.area_rect(id)).map_or(egui::vec2(180.0, 170.0), |r| r.size());
     let pos = egui::pos2(open.pos.x.min(screen.right() - size.x).max(screen.left()), open.pos.y.min(screen.bottom() - size.y).max(screen.top()));
     let mut chosen = None;

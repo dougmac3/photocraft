@@ -49,6 +49,10 @@ impl egui::plugin::Plugin for SingleLineDrag {
 fn dragged_row_y(ctx: &Context) -> Option<f32> {
     let (down, origin) = ctx.input(|i| (i.pointer.primary_down(), i.pointer.press_origin()));
     let origin = origin.filter(|_| down)?;
+    // Inside Fossa, only a field of the desk's: Fossa's own fields are left as Fossa made them.
+    if !crate::fossa_native::owns(ctx, origin) {
+        return None;
+    }
     let id = ctx.memory(|m| m.focused())?;
     egui::TextEdit::load_state(ctx, id)?;
     let rect = ctx.read_response(id)?.rect;
