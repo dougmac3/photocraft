@@ -5027,6 +5027,7 @@ dependencies = [
  "flate2",
  "log",
  "photocraft-algo",
+ "photocraft-automation",
  "photocraft-cms",
  "photocraft-codecs",
  "photocraft-color",

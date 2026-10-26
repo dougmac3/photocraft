@@ -49,6 +49,8 @@ sys-locale = "=0.3.2"
 # them; pollster (already linked through rfd) waits for one off the UI thread.
 rfd = { workspace = true }
 pollster = "0.4"
+# The desktop app's automation policy and folder capabilities for the desk's control channel.
+photocraft-automation = { workspace = true }
 
 # Installed RAM for the GPU memory budget (`gpu_canvas::physical_memory`): the safe binding the
 # desktop app already uses, pinned to the same version.
